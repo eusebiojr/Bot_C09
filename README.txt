@@ -39,7 +39,6 @@ pandas>=2.0.0
 openpyxl>=3.1.0
 python-dotenv>=1.0.0
 Office365-REST-Python-Client>=2.5.0
-pathlib2>=2.3.7
 ```
 
 ## 🚀 Instruções de Migração

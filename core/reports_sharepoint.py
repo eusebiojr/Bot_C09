@@ -81,14 +81,19 @@ class SharePointReportsManager:
             ctx = self._get_context()
             caminho_arquivo = f"{self.reports_path}/{self.reports_file}"
             
-            # Baixa arquivo
+            # Baixa arquivo (método correto Office365)
             arquivo = ctx.web.get_file_by_server_relative_url(caminho_arquivo)
-            download_result = arquivo.download()
+            
+            # Cria buffer para receber o download
+            download_buffer = BytesIO()
+            arquivo.download(download_buffer)
             ctx.execute_query()
             
+            # Volta para o início do buffer
+            download_buffer.seek(0)
+            
             # Carrega em DataFrame
-            buffer = BytesIO(download_result.content)
-            df = pd.read_excel(buffer, sheet_name="Resumo", engine="openpyxl")
+            df = pd.read_excel(download_buffer, sheet_name="Resumo", engine="openpyxl")
             df['Data'] = pd.to_datetime(df['Data']).dt.date
             
             print(f"✅ Reports carregado: {len(df)} registros")
@@ -112,14 +117,19 @@ class SharePointReportsManager:
             ctx = self._get_context()
             caminho_arquivo = f"{self.reports_path}/{self.reports_file}"
             
-            # Baixa arquivo
+            # Baixa arquivo (método correto Office365)
             arquivo = ctx.web.get_file_by_server_relative_url(caminho_arquivo)
-            download_result = arquivo.download()
+            
+            # Cria buffer para receber o download
+            download_buffer = BytesIO()
+            arquivo.download(download_buffer)
             ctx.execute_query()
             
+            # Volta para o início do buffer
+            download_buffer.seek(0)
+            
             # Carrega aba específica
-            buffer = BytesIO(download_result.content)
-            df = pd.read_excel(buffer, sheet_name=sheet_name, engine="openpyxl")
+            df = pd.read_excel(download_buffer, sheet_name=sheet_name, engine="openpyxl")
             
             # Converte colunas de data
             if sheet_name == "Candles" and "Data Evento" in df.columns:

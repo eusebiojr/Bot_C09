@@ -41,30 +41,78 @@ class FrotalogScraper:
         print(f"Pasta de downloads: {self.pasta_download}")
         
     def _validate_chrome_driver(self, path: str) -> str:
-        """Valida e resolve caminho do ChromeDriver."""
-        if not path:
-            raise ValueError("CHROME_DRIVER_PATH não definido no .env")
+        """Valida e resolve caminho do ChromeDriver (local + cloud)."""
+        
+        # Detecta se está rodando no Cloud Run
+        is_cloud_run = os.getenv("K_SERVICE") is not None
+        
+        if is_cloud_run:
+            # No Cloud Run, usa Chrome/Chromium do sistema
+            print("🌐 Detectado ambiente Cloud Run - usando Chrome do sistema")
             
-        p = Path(path)
-        if not p.is_absolute():
-            p = Path(__file__).parent.parent.joinpath(p).resolve()
+            # Tenta encontrar Chrome/Chromium instalado
+            possible_paths = [
+                "/usr/bin/google-chrome",
+                "/usr/bin/google-chrome-stable", 
+                "/usr/bin/chromium",
+                "/usr/bin/chromium-browser"
+            ]
             
-        if not p.is_file():
-            raise FileNotFoundError(f"ChromeDriver não encontrado em '{p}'")
+            for chrome_path in possible_paths:
+                if os.path.exists(chrome_path):
+                    print(f"✅ Chrome encontrado: {chrome_path}")
+                    # No Cloud Run, retornamos o path do Chrome, não do driver
+                    return chrome_path
             
-        return str(p)
+            raise FileNotFoundError("Chrome/Chromium não encontrado no Cloud Run. Verifique Dockerfile.")
+        
+        else:
+            # Ambiente local - validação original
+            if not path:
+                raise ValueError("CHROME_DRIVER_PATH não definido no .env")
+                
+            p = Path(path)
+            if not p.is_absolute():
+                p = Path(__file__).parent.parent.joinpath(p).resolve()
+                
+            if not p.is_file():
+                raise FileNotFoundError(f"ChromeDriver não encontrado em '{p}'")
+                
+            print(f"💻 Ambiente local - usando ChromeDriver: {p}")
+            return str(p)
     
     def _setup_chrome_options(self) -> webdriver.ChromeOptions:
-        """Configura opções do Chrome para automação."""
+        """Configura opções do Chrome para automação (local + cloud)."""
         options = webdriver.ChromeOptions()
         
-        # Execução em background (descomente para headless)
-        options.add_argument("--headless=new")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--window-size=1920x1080")
-        options.add_argument("--no-sandbox")
+        # Detecta ambiente
+        is_cloud_run = os.getenv("K_SERVICE") is not None
         
-        # Configurações de download automático
+        if is_cloud_run:
+            # Configurações específicas para Cloud Run
+            print("🌐 Configurando Chrome para Cloud Run...")
+            options.add_argument("--headless=new")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--disable-web-security")
+            options.add_argument("--disable-features=VizDisplayCompositor")
+            options.add_argument("--window-size=1920x1080")
+            options.add_argument("--remote-debugging-port=9222")
+            
+            # Define caminho do Chrome no container
+            chrome_path = self.chrome_driver_path  # Já validado como Chrome path
+            options.binary_location = chrome_path
+            
+        else:
+            # Configurações para ambiente local
+            print("💻 Configurando Chrome para ambiente local...")
+            options.add_argument("--headless=new")
+            options.add_argument("--disable-gpu") 
+            options.add_argument("--window-size=1920x1080")
+            options.add_argument("--no-sandbox")
+        
+        # Configurações de download (comum para ambos)
         prefs = {
             "download.prompt_for_download": False,
             "download.default_directory": str(self.pasta_download),
@@ -298,8 +346,18 @@ class FrotalogScraper:
             Exception: Se houver erro em qualquer etapa
         """
         options = self._setup_chrome_options()
-        service = Service(self.chrome_driver_path)
-        driver = webdriver.Chrome(service=service, options=options)
+        
+        # Detecta ambiente para configurar Service
+        is_cloud_run = os.getenv("K_SERVICE") is not None
+        
+        if is_cloud_run:
+            # No Cloud Run, não precisa de Service - Chrome gerencia sozinho
+            driver = webdriver.Chrome(options=options)
+        else:
+            # Ambiente local - usa ChromeDriver Service
+            service = Service(self.chrome_driver_path)
+            driver = webdriver.Chrome(service=service, options=options)
+        
         wait = WebDriverWait(driver, 20)
         
         try:
