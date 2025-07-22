@@ -33,7 +33,12 @@ class FrotalogScraper:
         """
         self.chrome_driver_path = self._validate_chrome_driver(chrome_driver_path)
         self.download_timeout = download_timeout
-        self.pasta_download = Path.home() / "Downloads"
+        
+        # Usa diretório temporário para downloads (funciona local + nuvem)
+        import tempfile
+        self.pasta_download = Path(tempfile.gettempdir()) / "c09_downloads"
+        self.pasta_download.mkdir(exist_ok=True)
+        print(f"Pasta de downloads: {self.pasta_download}")
         
     def _validate_chrome_driver(self, path: str) -> str:
         """Valida e resolve caminho do ChromeDriver."""

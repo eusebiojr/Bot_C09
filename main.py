@@ -9,6 +9,7 @@ import os
 import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
+from io import BytesIO  # ← Adiciona import do BytesIO
 
 # Adiciona diretórios ao path para imports
 sys.path.append(str(Path(__file__).parent))
@@ -123,9 +124,9 @@ class C09Orchestrator:
                 print(f"❌ Falha no upload para {unidade}")
                 return False
             
-            # 5. Processamento adicional (Reports + Sentinela)
-            print(f"\n[4/4] Processamento adicional...")
-            self._processar_reports_sentinela(unidade, buffer_tratado, data_final)
+            # 5. Processamento de analytics (Reports + Sentinela)
+            print(f"\n[4/4] Processamento de analytics...")
+            self._processar_analytics(unidade, buffer_tratado, data_final)
             
             # 6. Limpeza
             self._limpar_arquivo_temporario(caminho_relatorio)
@@ -139,7 +140,7 @@ class C09Orchestrator:
             return False
     
     def _upload_sharepoint(self, unidade_config: dict, data_referencia: datetime, 
-                          buffer_tratado, caminho_original: str) -> bool:
+                          buffer_tratado: BytesIO, caminho_original: str) -> bool:
         """
         Faz upload dos arquivos para SharePoint.
         
@@ -195,13 +196,18 @@ class C09Orchestrator:
             
             return sucesso_tratado and sucesso_original
             
+        except ImportError as e:
+            print(f"❌ Erro de import no upload SharePoint: {e}")
+            print("🔧 Verifique se todos os módulos estão criados")
+            return False
+            
         except Exception as e:
             print(f"Erro no upload SharePoint: {e}")
             return False
     
-    def _processar_reports_sentinela(self, unidade: str, buffer_tratado, data_referencia: datetime):
+    def _processar_analytics(self, unidade: str, buffer_tratado: BytesIO, data_referencia: datetime):
         """
-        Executa processamento adicional: Reports e Sistema Sentinela.
+        Executa processamento de analytics e alertas.
         
         Args:
             unidade: Nome da unidade
@@ -209,23 +215,29 @@ class C09Orchestrator:
             data_referencia: Data de referência
         """
         try:
-            print(f"Processando reports e sentinela para {unidade}...")
+            print(f"Processando analytics para {unidade}...")
             
-            # Salva arquivo localmente para processamento adicional
-            from core.rafael_integration import RafaelProcessor
+            from core.analytics_processor import criar_analytics_processor
             
-            processor_rafael = RafaelProcessor(
+            processor_analytics = criar_analytics_processor(
                 unidade=unidade,
                 config=self.config
             )
             
-            processor_rafael.processar_reports_completo(
+            sucesso = processor_analytics.processar_analytics_completo(
                 buffer_dados=buffer_tratado,
                 data_referencia=data_referencia
             )
             
+            if not sucesso:
+                print(f"⚠️ Analytics {unidade} processado com falhas")
+            
+        except ImportError as e:
+            print(f"❌ Erro de import no analytics: {e}")
+            print("🔧 Verifique se todos os módulos estão criados")
+            
         except Exception as e:
-            print(f"Erro no processamento adicional: {e}")
+            print(f"❌ Erro no processamento de analytics {unidade}: {e}")
             # Não falha o processo principal se houver erro aqui
     
     def _limpar_arquivo_temporario(self, caminho_arquivo: str):

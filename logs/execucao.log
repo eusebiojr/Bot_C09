@@ -1,0 +1,47 @@
+
+================================================================================
+EXECUÇÃO C09 - 2025-07-22 13:22:48
+================================================================================
+=== SISTEMA C09 INICIADO - 2025-07-22 13:22:48 ===
+
+💥 ERRO CRÍTICO: Arquivo de configuração não encontrado: C:\Users\eusebioagj\OneDrive\Bot_C09\config\unidades.xlsx
+Traceback (most recent call last):
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\main.py", line 351, in main
+    orchestrator = C09Orchestrator()
+                   ^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\main.py", line 32, in __init__
+    self.config = carregar_config()
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 237, in carregar_config
+    loader = ConfigurationLoader(config_path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 31, in __init__
+    self._validar_arquivo_config()
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 39, in _validar_arquivo_config
+    raise FileNotFoundError(f"Arquivo de configuração não encontrado: {self.config_path}")
+FileNotFoundError: Arquivo de configuração não encontrado: C:\Users\eusebioagj\OneDrive\Bot_C09\config\unidades.xlsx
+
+================================================================================
+EXECUÇÃO C09 - 2025-07-22 13:24:06
+================================================================================
+=== SISTEMA C09 INICIADO - 2025-07-22 13:24:06 ===
+Configurações carregadas: 2 unidades ativas
+ERRO ao carregar configuração completa: Credenciais obrigatórias não encontradas no .env: ['frota_user', 'frota_password', 'sp_user', 'sp_password', 'chrome_driver_path']
+
+💥 ERRO CRÍTICO: Credenciais obrigatórias não encontradas no .env: ['frota_user', 'frota_password', 'sp_user', 'sp_password', 'chrome_driver_path']
+Traceback (most recent call last):
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\main.py", line 351, in main
+    orchestrator = C09Orchestrator()
+                   ^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\main.py", line 32, in __init__
+    self.config = carregar_config()
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 238, in carregar_config
+    return loader.carregar_configuracao_completa()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 182, in carregar_configuracao_completa
+    "credenciais": self.carregar_credenciais(),
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eusebioagj\OneDrive\Bot_C09\config\settings.py", line 167, in carregar_credenciais
+    raise ValueError(f"Credenciais obrigatórias não encontradas no .env: {faltando}")
+ValueError: Credenciais obrigatórias não encontradas no .env: ['frota_user', 'frota_password', 'sp_user', 'sp_password', 'chrome_driver_path']

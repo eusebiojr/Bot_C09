@@ -211,12 +211,9 @@ class ConstantesEspecificas:
     MAX_TENTATIVAS_STATUS = 60
     INTERVALO_VERIFICACAO = 10  # segundos
     
-    # Paths locais (podem ser configuráveis depois)
-    BASE_REPORTS_LOCAL = r"C:\Users\tallespaiva\Suzano S A\Controle operacional - Bases de Dados\CREARE\RRP\C09\2025"
-    CAMINHO_REPORTS = r"C:\Users\tallespaiva\Suzano S A\Controle operacional - Bases de Dados\CREARE\RRP\C09\2025\Reports\base de dados reports.xlsx"
-    
     # Configurações SharePoint
     LISTA_DESVIOS = "Desvios"
+    REPORTS_SHAREPOINT_PATH = "CREARE/Reports"  # Nova pasta para reports
     
     # Meses em português
     MESES_PT = {
