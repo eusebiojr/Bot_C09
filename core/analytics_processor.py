@@ -39,8 +39,8 @@ class AnalyticsProcessor:
         # Configurações SharePoint para alertas
         self.site_url = "https://suzano.sharepoint.com/sites/Controleoperacional"
         self.list_name = "Desvios"
-        self.username = "eusebioagj@suzano.com.br"
-        self.password = "290422@Cc"
+        self.username = config["credenciais"]["sp_user"]
+        self.password = config["credenciais"]["sp_password"]
         
         # Gerenciador de reports no SharePoint
         try:

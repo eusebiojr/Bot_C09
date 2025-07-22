@@ -86,7 +86,7 @@ class SharePointReportsManager:
             
             # Cria buffer para receber o download
             download_buffer = BytesIO()
-            arquivo.download(download_buffer)
+            arquivo.download_session(download_buffer).execute_query()
             ctx.execute_query()
             
             # Volta para o início do buffer
@@ -122,7 +122,7 @@ class SharePointReportsManager:
             
             # Cria buffer para receber o download
             download_buffer = BytesIO()
-            arquivo.download(download_buffer)
+            arquivo.download_session(download_buffer).execute_query()
             ctx.execute_query()
             
             # Volta para o início do buffer
