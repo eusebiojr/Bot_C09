@@ -204,18 +204,20 @@ class ConstantesEspecificas:
     # URLs e endpoints
     FROTALOG_URL = "https://frotalog.com.br/"
     SHAREPOINT_BASE_URL = "https://suzano.sharepoint.com/sites/Controleoperacional"
-    SHAREPOINT_DOCS_PATH = "/sites/Controleoperacional/Documentos Compartilhados/Bases de Dados"
+    
+    # ✅ MUDANÇA: Novo caminho base para pasta de teste
+    SHAREPOINT_DOCS_PATH = "/sites/Controleoperacional/Documentos Compartilhados/Teste_BOT"
     
     # Configurações de execução
-    DOWNLOAD_TIMEOUT = 300  # segundos
+    DOWNLOAD_TIMEOUT = 300
     MAX_TENTATIVAS_STATUS = 60
-    INTERVALO_VERIFICACAO = 10  # segundos
+    INTERVALO_VERIFICACAO = 10
     
     # Configurações SharePoint
-    LISTA_DESVIOS = "Desvios"
-    REPORTS_SHAREPOINT_PATH = "CREARE/Reports"  # Nova pasta para reports
+    LISTA_ALERTAS = "DesviosTeste"  # Já alterado anteriormente
+    REPORTS_SHAREPOINT_PATH = "CREARE/Reports"  # ← Será criado dentro de Teste_BOT
     
-    # Meses em português
+    # Meses em português (permanece igual)
     MESES_PT = {
         1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
         5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto", 

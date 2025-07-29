@@ -1,15 +1,18 @@
 # main.py
 """
 Orquestrador principal do sistema C09.
-Substitui C09_unificado.py com arquitetura modular e configurável.
+Suporta dois modos de execução:
+- CANDLES: Execução a cada 10min (só atualiza reports)
+- COMPLETO: Execução a cada 1h (processamento completo + alertas)
 """
 
 import sys
 import os
+import json
 import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
-from io import BytesIO  # ← Adiciona import do BytesIO
+from io import BytesIO
 
 # Adiciona diretórios ao path para imports
 sys.path.append(str(Path(__file__).parent))
@@ -22,6 +25,7 @@ from config.settings import carregar_config, validar_configuracao, ConstantesEsp
 class C09Orchestrator:
     """
     Orquestrador principal que coordena download, processamento e upload.
+    Agora com suporte a execução contínua (CANDLES/COMPLETO).
     """
     
     def __init__(self):
@@ -35,24 +39,74 @@ class C09Orchestrator:
         
         self.credenciais = self.config["credenciais"]
         
-        # Inicializa componentes
-        self.scraper = criar_scraper(
-            chrome_driver_path=self.credenciais["chrome_driver_path"],
-            download_timeout=ConstantesEspecificas.DOWNLOAD_TIMEOUT
-        )
+        # Detecta modo de execução
+        self.modo_execucao = self._detectar_modo_execucao()
+        print(f"🔧 Modo de execução: {self.modo_execucao}")
+        
+        # Inicializa componentes baseado no modo
+        if self.modo_execucao == "CANDLES":
+            # Modo rápido - não precisa de scraper
+            self.scraper = None
+            print("⚡ Modo CANDLES - Processamento rápido (4h de dados)")
+        else:
+            # Modo completo - inicializa scraper
+            self.scraper = criar_scraper(
+                chrome_driver_path=self.credenciais["chrome_driver_path"],
+                download_timeout=ConstantesEspecificas.DOWNLOAD_TIMEOUT
+            )
+            print("🔄 Modo COMPLETO - Processamento completo + alertas")
+        
+    def _detectar_modo_execucao(self) -> str:
+        """
+        Detecta modo de execução via variáveis de ambiente ou request body.
+        
+        Returns:
+            "CANDLES" ou "COMPLETO"
+        """
+        # Verifica variável de ambiente (Cloud Run)
+        modo_env = os.getenv("EXECUTION_MODE", "").upper()
+        if modo_env in ["CANDLES", "COMPLETO"]:
+            return modo_env
+        
+        # Verifica request body (Cloud Scheduler HTTP)
+        try:
+            request_body = os.getenv("REQUEST_BODY", "{}")
+            data = json.loads(request_body)
+            modo_request = data.get("mode", "").upper()
+            if modo_request in ["CANDLES", "COMPLETO"]:
+                return modo_request
+        except:
+            pass
+        
+        # Verifica argumentos da linha de comando
+        if len(sys.argv) > 1:
+            modo_args = sys.argv[1].upper()
+            if modo_args in ["CANDLES", "COMPLETO"]:
+                return modo_args
+        
+        # Default para desenvolvimento local
+        return "COMPLETO"
         
     def _obter_periodo_execucao(self) -> tuple[datetime, datetime]:
         """
-        Define período de execução (1º dia do mês até hoje).
+        Define período de execução baseado no modo.
         
         Returns:
             Tuple com (data_inicial, data_final)
         """
-        hoje = datetime.today()
-        data_inicial = hoje.replace(day=1)
-        data_final = hoje
+        hoje = datetime.now()
         
-        print(f"Período de execução: {data_inicial.date()} até {data_final.date()}")
+        if self.modo_execucao == "CANDLES":
+            # Últimas 4 horas para garantir cobertura
+            data_inicial = hoje - timedelta(hours=4)
+            data_final = hoje
+            print(f"Período CANDLES: {data_inicial:%H:%M} até {data_final:%H:%M} (4h)")
+        else:
+            # Modo completo - 1º dia do mês até hoje
+            data_inicial = hoje.replace(day=1)
+            data_final = hoje
+            print(f"Período COMPLETO: {data_inicial.date()} até {data_final.date()}")
+        
         return data_inicial, data_final
         
     def _criar_processor_para_unidade(self, unidade: str):
@@ -76,15 +130,45 @@ class C09Orchestrator:
             from core.processor import C09DataProcessor
             return C09DataProcessor(config_pois)
     
-    def processar_unidade(self, unidade_config: dict) -> bool:
+    def processar_unidade_modo_candles(self, unidade_config: dict) -> bool:
         """
-        Processa uma unidade completa.
+        Processamento rápido - só atualiza candles/reports (modo 10min).
         
         Args:
             unidade_config: Configuração da unidade
             
         Returns:
-            True se processamento bem-sucedido, False caso contrário
+            True se processamento bem-sucedido
+        """
+        unidade = unidade_config["unidade"]
+        
+        try:
+            print(f"\n🔄 CANDLES {unidade} - Atualizando reports...")
+            
+            # Processamento de analytics em tempo real
+            sucesso = self._processar_analytics_tempo_real(unidade)
+            
+            if sucesso:
+                print(f"✅ {unidade} - Reports atualizados")
+                return True
+            else:
+                print(f"❌ {unidade} - Falha na atualização")
+                return False
+                
+        except Exception as e:
+            print(f"❌ ERRO CANDLES {unidade}: {e}")
+            self._log_erro_detalhado(e, f"Modo CANDLES - Unidade {unidade}")
+            return False
+    
+    def processar_unidade_modo_completo(self, unidade_config: dict) -> bool:
+        """
+        Processamento completo - download + processamento + alertas (modo 1h).
+        
+        Args:
+            unidade_config: Configuração da unidade
+            
+        Returns:
+            True se processamento bem-sucedido
         """
         unidade = unidade_config["unidade"]
         empresa_frotalog = unidade_config["empresa_frotalog"]
@@ -124,7 +208,7 @@ class C09Orchestrator:
                 print(f"❌ Falha no upload para {unidade}")
                 return False
             
-            # 5. Processamento de analytics (Reports + Sentinela)
+            # 5. Processamento de analytics completo (com alertas)
             print(f"\n[4/4] Processamento de analytics...")
             self._processar_analytics(unidade, buffer_tratado, data_final)
             
@@ -136,7 +220,38 @@ class C09Orchestrator:
             
         except Exception as e:
             print(f"❌ ERRO ao processar unidade {unidade}: {e}")
-            traceback.print_exc()
+            self._log_erro_detalhado(e, f"Modo COMPLETO - Unidade {unidade}")
+            return False
+    
+    def _processar_analytics_tempo_real(self, unidade: str) -> bool:
+        """
+        Processamento de analytics em tempo real (só candles/reports).
+        
+        Args:
+            unidade: Nome da unidade
+            
+        Returns:
+            True se processamento bem-sucedido
+        """
+        try:
+            from core.analytics_processor import criar_analytics_processor
+            
+            processor_analytics = criar_analytics_processor(
+                unidade=unidade,
+                config=self.config
+            )
+            
+            # Método específico para tempo real (implementar no analytics_processor)
+            sucesso = processor_analytics.processar_tempo_real(horas_periodo=4)
+            
+            return sucesso
+            
+        except ImportError as e:
+            print(f"❌ Erro de import no analytics: {e}")
+            return False
+            
+        except Exception as e:
+            print(f"❌ Erro no processamento tempo real {unidade}: {e}")
             return False
     
     def _upload_sharepoint(self, unidade_config: dict, data_referencia: datetime, 
@@ -207,7 +322,7 @@ class C09Orchestrator:
     
     def _processar_analytics(self, unidade: str, buffer_tratado: BytesIO, data_referencia: datetime):
         """
-        Executa processamento de analytics e alertas.
+        Executa processamento de analytics e alertas (modo completo).
         
         Args:
             unidade: Nome da unidade
@@ -249,9 +364,99 @@ class C09Orchestrator:
         except Exception as e:
             print(f"Aviso: Não foi possível remover arquivo temporário: {e}")
     
+    def _log_erro_detalhado(self, erro: Exception, contexto: str):
+        """
+        Registra erro detalhado para debugging.
+        
+        Args:
+            erro: Exception capturada
+            contexto: Contexto onde ocorreu o erro
+        """
+        erro_detalhado = {
+            "timestamp": datetime.now().isoformat(),
+            "contexto": contexto,
+            "erro": str(erro),
+            "tipo": type(erro).__name__,
+            "traceback": traceback.format_exc()
+        }
+        
+        # Log para arquivo
+        log_file = Path(__file__).parent / "logs" / "erros_detalhados.json"
+        log_file.parent.mkdir(exist_ok=True)
+        
+        try:
+            import json
+            with open(log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(erro_detalhado, ensure_ascii=False) + "\n")
+        except:
+            pass  # Se falhar o log, não quebra o sistema
+    
+    def executar_com_retry(self, max_tentativas: int = 10) -> bool:
+        """
+        Executa ciclo com sistema de retry.
+        
+        Args:
+            max_tentativas: Máximo de tentativas em caso de falha
+            
+        Returns:
+            True se executado com sucesso
+        """
+        for tentativa in range(1, max_tentativas + 1):
+            try:
+                if self.modo_execucao == "CANDLES":
+                    sucesso = self.executar_ciclo_candles()
+                else:
+                    sucesso = self.executar_ciclo_completo()
+                
+                if sucesso:
+                    return True
+                else:
+                    print(f"⚠️ Tentativa {tentativa}/{max_tentativas} falhou")
+                    
+            except Exception as e:
+                print(f"❌ Tentativa {tentativa}/{max_tentativas} - Erro: {e}")
+                self._log_erro_detalhado(e, f"Tentativa {tentativa}")
+                
+                if tentativa == max_tentativas:
+                    # Última tentativa - enviar e-mail de falha crítica
+                    self._notificar_falha_critica(e, tentativa)
+                    return False
+                
+                # Aguarda antes da próxima tentativa (backoff exponencial)
+                import time
+                time.sleep(min(60 * tentativa, 600))  # Max 10 min
+        
+        return False
+    
+    def executar_ciclo_candles(self) -> bool:
+        """
+        Executa ciclo rápido para todas as unidades (modo 10min).
+        
+        Returns:
+            True se todas as unidades processadas com sucesso
+        """
+        unidades_ativas = [u for u in self.config["unidades"] if u.get("ativo", True)]
+        
+        print(f"🔄 MODO CANDLES - Atualizando {len(unidades_ativas)} unidades...")
+        
+        sucessos = 0
+        falhas = 0
+        
+        for unidade_config in unidades_ativas:
+            sucesso = self.processar_unidade_modo_candles(unidade_config)
+            
+            if sucesso:
+                sucessos += 1
+            else:
+                falhas += 1
+        
+        # Relatório resumido
+        print(f"\n📊 CANDLES CONCLUÍDO: {sucessos}✅ {falhas}❌")
+        return falhas == 0
+    
     def executar_ciclo_completo(self) -> bool:
         """
-        Executa ciclo completo para todas as unidades ativas.
+        Executa ciclo completo para todas as unidades (modo 1h).
         
         Returns:
             True se todas as unidades processadas com sucesso
@@ -268,7 +473,7 @@ class C09Orchestrator:
             print(f"\n🔄 AGUARDANDO PROCESSAMENTO DE {unidade}...")
             print(f"⏳ Outras unidades aguardarão {unidade} terminar completamente")
             
-            sucesso = self.processar_unidade(unidade_config)
+            sucesso = self.processar_unidade_modo_completo(unidade_config)
             
             if sucesso:
                 sucessos += 1
@@ -291,20 +496,53 @@ class C09Orchestrator:
         
         if falhas > 0:
             print(f"\n⚠️ ATENÇÃO: {falhas} unidade(s) falharam!")
-            # Aqui seria chamado o sistema de e-mail de falha
             self._notificar_falhas(falhas)
         
         return falhas == 0
     
     def _notificar_falhas(self, num_falhas: int):
         """
-        Notifica falhas por e-mail (implementar depois).
+        Notifica falhas por e-mail.
         
         Args:
             num_falhas: Número de falhas ocorridas
         """
-        # TODO: Implementar notificação por e-mail
-        print(f"TODO: Enviar e-mail de falha do sistema ({num_falhas} falhas)")
+        try:
+            from core.email_notifier import EmailNotifier
+            
+            notifier = EmailNotifier(self.config)
+            notifier.enviar_falha_sistema(
+                erro=f"{num_falhas} unidade(s) falharam no processamento",
+                contexto=f"Modo {self.modo_execucao}",
+                timestamp=datetime.now()
+            )
+        except ImportError:
+            print(f"⚠️ Sistema de e-mail não implementado ainda")
+        except Exception as e:
+            print(f"⚠️ Falha ao enviar e-mail: {e}")
+    
+    def _notificar_falha_critica(self, erro: Exception, tentativas: int):
+        """
+        Notifica falha crítica após esgotar tentativas.
+        
+        Args:
+            erro: Exception que causou a falha
+            tentativas: Número de tentativas realizadas
+        """
+        try:
+            from core.email_notifier import EmailNotifier
+            
+            notifier = EmailNotifier(self.config)
+            notifier.enviar_falha_critica(
+                erro=erro,
+                tentativas=tentativas,
+                modo=self.modo_execucao,
+                timestamp=datetime.now()
+            )
+        except ImportError:
+            print(f"⚠️ Sistema de e-mail não implementado ainda")
+        except Exception as e:
+            print(f"⚠️ Falha ao enviar e-mail crítico: {e}")
 
 
 def main():
@@ -347,9 +585,9 @@ def main():
             sys.stderr = TeeOutput(f, original_stderr)
             
             try:
-                # Executa orquestrador
+                # Executa orquestrador com retry
                 orchestrator = C09Orchestrator()
-                sucesso = orchestrator.executar_ciclo_completo()
+                sucesso = orchestrator.executar_com_retry(max_tentativas=10)
                 
                 if sucesso:
                     print(f"\n🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - {datetime.now():%H:%M:%S}")

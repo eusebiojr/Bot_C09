@@ -123,23 +123,13 @@ class SharePointUploader:
     def upload_arquivo(self, base_sharepoint: str, ano: str, mes: str, 
                       nome_arquivo: str, conteudo: Union[str, bytes], 
                       is_buffer: bool = True) -> bool:
-        """
-        Faz upload de arquivo para SharePoint.
-        
-        Args:
-            base_sharepoint: Base do caminho SharePoint (ex: "CREARE/RRP/C09")
-            ano: Ano (ex: "2025")
-            mes: Mês (ex: "01. Janeiro")
-            nome_arquivo: Nome do arquivo
-            conteudo: Conteúdo do arquivo (caminho se is_buffer=False, bytes se True)
-            is_buffer: True se conteudo é bytes/buffer, False se é caminho de arquivo
-            
-        Returns:
-            True se upload bem-sucedido
-        """
+        """Faz upload de arquivo para SharePoint."""
         try:
+            # ✅ MUDANÇA: Usa nova constante
+            from config.settings import ConstantesEspecificas
+            raiz_docs = ConstantesEspecificas.SHAREPOINT_DOCS_PATH
+            
             # Constrói caminho da pasta
-            raiz_docs = "/sites/Controleoperacional/Documentos Compartilhados/Bases de Dados"
             caminho_pasta = f"{raiz_docs}/{base_sharepoint}/{ano}/{mes}"
             
             print(f"Upload para: {caminho_pasta}/{nome_arquivo}")

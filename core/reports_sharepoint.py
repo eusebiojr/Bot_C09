@@ -22,21 +22,15 @@ class SharePointReportsManager:
     """
     
     def __init__(self, site_url: str, username: str, password: str):
-        """
-        Inicializa gerenciador de reports.
-        
-        Args:
-            site_url: URL do site SharePoint
-            username: Usuário SharePoint
-            password: Senha SharePoint
-        """
+        """Inicializa gerenciador de reports."""
         self.site_url = site_url
         self.username = username
         self.password = password
         self._ctx = None
         
-        # Caminhos SharePoint para reports
-        self.base_docs = "/sites/Controleoperacional/Documentos Compartilhados/Bases de Dados"
+        # ✅ MUDANÇA: Usa nova estrutura de pastas
+        from config.settings import ConstantesEspecificas
+        self.base_docs = ConstantesEspecificas.SHAREPOINT_DOCS_PATH
         self.reports_path = f"{self.base_docs}/CREARE/Reports"
         self.reports_file = "base_dados_reports.xlsx"
     
@@ -86,7 +80,7 @@ class SharePointReportsManager:
             
             # Cria buffer para receber o download
             download_buffer = BytesIO()
-            arquivo.download_session(download_buffer).execute_query()
+            arquivo.download(download_buffer).execute_query()
             ctx.execute_query()
             
             # Volta para o início do buffer

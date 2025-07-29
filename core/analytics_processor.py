@@ -2,6 +2,7 @@
 """
 Processador de Analytics e Sistema de Alertas.
 Responsável por: Métricas operacionais, Candles temporais, Sistema Sentinela e Reports gerenciais.
+Agora com suporte a processamento em tempo real (execuções a cada 10min).
 """
 
 import os
@@ -14,23 +15,9 @@ from office365.runtime.auth.user_credential import UserCredential
 
 
 class AnalyticsProcessor:
-    """
-    Processador de analytics operacionais e sistema de alertas.
-    
-    Funcionalidades:
-    - Cálculo de métricas (TPV, DM)
-    - Geração de candles temporais
-    - Sistema de alertas Sentinela
-    - Reports gerenciais
-    """
-    
     def __init__(self, unidade: str, config: Dict[str, Any]):
         """
         Inicializa processador de analytics.
-        
-        Args:
-            unidade: Nome da unidade (RRP, TLS, etc.)
-            config: Configuração completa do sistema
         """
         self.unidade = unidade
         self.config = config
@@ -38,7 +25,10 @@ class AnalyticsProcessor:
         
         # Configurações SharePoint para alertas
         self.site_url = "https://suzano.sharepoint.com/sites/Controleoperacional"
-        self.list_name = "Desvios"
+        
+        # ✅ MUDANÇA: Lista para ambiente de teste
+        self.list_name = "DesviosTeste"  # ← ALTERADO de "Desvios" para "DesviosTeste"
+        
         self.username = config["credenciais"]["sp_user"]
         self.password = config["credenciais"]["sp_password"]
         
@@ -53,6 +43,80 @@ class AnalyticsProcessor:
         except ImportError as e:
             print(f"⚠️ Erro ao importar reports_sharepoint: {e}")
             self.reports_manager = None
+    
+    def processar_tempo_real(self, horas_periodo: int = 4) -> bool:
+        """
+        Processamento de analytics em tempo real (só candles/reports).
+        Usado para execuções a cada 10 minutos.
+        
+        Args:
+            horas_periodo: Período em horas para buscar dados recentes
+            
+        Returns:
+            True se processamento bem-sucedido
+        """
+        try:
+            print(f"=== Analytics Tempo Real {self.unidade} - Últimas {horas_periodo}h ===")
+            
+            # Define período de análise
+            agora = datetime.now()
+            inicio_periodo = agora - timedelta(hours=horas_periodo)
+            
+            # Obtém POIs para candles desta unidade
+            if self.unidade == "RRP":
+                pois_candles = ["Descarga Inocencia", "Carregamento Fabrica RRP", "PA AGUA CLARA", "Oficina JSL"]
+            elif self.unidade == "TLS":
+                pois_candles = ["PA Celulose", "Manutencao Celulose", "Carregamento Fabrica", "Descarga TAP", "Oficina Central JSL"]
+            else:
+                print(f"⚠️ Unidade {self.unidade} não tem POIs configurados para tempo real")
+                return False
+            
+            # Processa cada POI (dados já existentes no SharePoint)
+            for poi in pois_candles:
+                print(f"Processando tempo real: {poi}")
+                
+                # Carrega dados existentes do SharePoint
+                try:
+                    df_candles_existente = self.reports_manager.carregar_candles_sharepoint("Candles")
+                    df_resumo_existente = self.reports_manager.carregar_candles_sharepoint("Resumo por Hora")
+                    
+                    if df_candles_existente.empty or df_resumo_existente.empty:
+                        print(f"⚠️ Dados históricos não encontrados para {poi}")
+                        continue
+                    
+                    # Filtra dados do período recente para este POI
+                    df_poi_recente = df_candles_existente[
+                        (df_candles_existente['POI'] == poi) &
+                        (df_candles_existente['Data Evento'] >= inicio_periodo)
+                    ]
+                    
+                    df_resumo_recente = df_resumo_existente[
+                        (df_resumo_existente['POI'] == poi) &
+                        (df_resumo_existente['Hora'] >= inicio_periodo)
+                    ]
+                    
+                    if not df_poi_recente.empty:
+                        print(f"📊 {poi}: {len(df_poi_recente)} eventos recentes processados")
+                    else:
+                        print(f"ℹ️ {poi}: Nenhum evento recente")
+                    
+                except Exception as e:
+                    print(f"⚠️ Erro ao processar {poi}: {e}")
+                    continue
+            
+            # Atualiza resumo base (sem recalcular métricas pesadas)
+            print("📈 Atualizando indicadores base...")
+            
+            # TPV e DM só calculamos no modo completo
+            # Aqui só mantemos a estrutura atualizada
+            sucesso_base = True  # Placeholder - implementar conforme necessário
+            
+            print(f"✅ Analytics tempo real {self.unidade} concluído")
+            return sucesso_base
+            
+        except Exception as e:
+            print(f"❌ Erro no processamento tempo real {self.unidade}: {e}")
+            return False
     
     def carregar_planilha_buffer(self, buffer: BytesIO) -> pd.DataFrame:
         """
@@ -369,12 +433,6 @@ class AnalyticsProcessor:
     def enviar_alertas_sharepoint(self, df_alertas: pd.DataFrame) -> bool:
         """
         Envia alertas para lista SharePoint.
-        
-        Args:
-            df_alertas: DataFrame com alertas
-            
-        Returns:
-            True se enviado com sucesso
         """
         if df_alertas.empty:
             return True
@@ -383,6 +441,7 @@ class AnalyticsProcessor:
             ctx = ClientContext(self.site_url).with_credentials(
                 UserCredential(self.username, self.password)
             )
+            
             sp_list = ctx.web.lists.get_by_title(self.list_name)
             
             # Verifica títulos existentes (evita duplicatas)

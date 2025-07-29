@@ -742,3 +742,346 @@ RELATÓRIO FINAL
 📊 Total: 2
 
 🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - 13:52:51
+
+================================================================================
+EXECUÇÃO C09 - 2025-07-22 16:17:54
+================================================================================
+=== SISTEMA C09 INICIADO - 2025-07-22 16:17:54 ===
+Configurações carregadas: 2 unidades ativas
+Credenciais carregadas com sucesso
+Configurações de e-mail carregadas: 2 tipos
+POIs carregados para RRP: 15 ativos
+POIs carregados para TLS: 25 ativos
+=== Configuração completa carregada com sucesso ===
+Configuração validada com sucesso
+🔧 Modo de execução: COMPLETO
+💻 Ambiente local - usando ChromeDriver: C:\Users\eusebioagj\OneDrive\Bot_C09\chromedriver-win64\chromedriver.exe
+Pasta de downloads: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads
+🔄 Modo COMPLETO - Processamento completo + alertas
+Iniciando processamento de 2 unidades...
+
+🔄 AGUARDANDO PROCESSAMENTO DE RRP...
+⏳ Outras unidades aguardarão RRP terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: RRP
+Empresa Frotalog: RB - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-22
+
+[1/4] Baixando relatório C09...
+💻 Configurando Chrome para ambiente local...
+=== Iniciando download C09: RB - TRANSP. CELULOSE ===
+Fazendo login no Frotalog...
+Login enviado.
+Pop-up de sessão tratado.
+Navegando para relatório C09...
+Frame 'main' carregado.
+Entrou em Dirigibilidade.
+Relatório C09 selecionado.
+Selecionando empresa: RB - TRANSP. CELULOSE
+Empresa 'RB - TRANSP. CELULOSE' selecionada.
+Configurando período: 2025-07-01 a 2025-07-22
+Modo 'Período' selecionado.
+Período configurado.
+Configurando formato e gerando relatório...
+Formato XLSX selecionado.
+Botão 'Visualizar Relatório' clicado.
+Janela de visualização fechada.
+Aguardando relatório ficar pronto...
+Clicou em 'Listar Relatórios'.
+Tentativa 1: elemento status não encontrado.
+Tentativa 2: status 'Aguardando Processamento' - aguardando...
+Tentativa 3: status 'Aguardando Processamento' - aguardando...
+Relatório pronto na tentativa 4.
+Download iniciado.
+Aguardando conclusão do download...
+Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx
+=== Download C09 concluído com sucesso ===
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 50951 registros
+Após filtro POIs: 36974 registros
+Após agrupamento: 32609 registros
+=== Processamento concluído: 32609 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Bases de Dados/CREARE/RRP/C09/2025/07. Julho/C09 01 a 22.07.2025.xlsx
+Excluindo arquivo antigo: C09 01 a 22.07.2025.xlsx
+✅ Upload concluído: C09 01 a 22.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Bases de Dados/CREARE/RRP/C09 Original/2025/07. Julho/C09 01 a 22.07.2025.xlsx
+Excluindo arquivo antigo: C09 01 a 22.07.2025.xlsx
+✅ Upload concluído: C09 01 a 22.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para RRP...
+=== Analytics RRP - 2025-07-22 ===
+Dados carregados do buffer: 32609 registros
+TPV PA AGUA CLARA para 2025-07-21: 1.85h
+DM Manutenção para 2025-07-21: 60.90h
+✅ Reports carregado: 1 registros
+⚠️ Data 2025-07-21 já existe no arquivo reports
+Processando candles: Descarga Inocencia
+✅ Candles carregado: 28006 registros
+✅ Resumo por Hora carregado: 4243 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica RRP
+✅ Candles carregado: 28020 registros
+✅ Resumo por Hora carregado: 4246 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: PA AGUA CLARA
+✅ Candles carregado: 28042 registros
+✅ Resumo por Hora carregado: 4249 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina JSL
+✅ Candles carregado: 28064 registros
+✅ Resumo por Hora carregado: 4252 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas...
+Verificando alertas: PA AGUA CLARA (threshold: 8)
+✅ Resumo por Hora carregado: 4255 registros
+✅ Candles carregado: 28070 registros
+⚠️ Alerta 'RRP_PAAGUACLARA_N4_22072025_070000' já existe no SharePoint
+✅ Alertas processados para PA AGUA CLARA
+Verificando alertas: Carregamento RRp (threshold: 8)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Carregamento RRp
+Verificando alertas: Descarga Inocencia (threshold: 15)
+✅ Resumo por Hora carregado: 4255 registros
+✅ Candles carregado: 28070 registros
+⚠️ Alerta 'RRP_DescargaInocencia_N2_21072025_190000' já existe no SharePoint
+✅ Alertas processados para Descarga Inocencia
+Verificando alertas: Manutenção Campo Grande (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Manutenção Campo Grande
+Verificando alertas: Manutencao fabrica (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Manutencao fabrica
+Verificando alertas: Manutenção Geral JSL RRP (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Manutenção Geral JSL RRP
+Verificando alertas: Oficina JSL (threshold: 15)
+✅ Resumo por Hora carregado: 4255 registros
+✅ Candles carregado: 28070 registros
+⚠️ Alerta 'RRP_OficinaJSL_N1_21072025_090000' já existe no SharePoint
+✅ Alertas processados para Oficina JSL
+Verificando alertas: Buffer frotas (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Buffer frotas
+Verificando alertas: Abastecimento Frotas RRP (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Abastecimento Frotas RRP
+Verificando alertas: Carregamento Fabrica RRP (threshold: 8)
+✅ Resumo por Hora carregado: 4255 registros
+✅ Candles carregado: 28070 registros
+⚠️ Alerta 'RRP_CarregamentoFabricaRRP_N3_21072025_180000' já existe no SharePoint
+✅ Alertas processados para Carregamento Fabrica RRP
+Verificando alertas: Posto Mutum (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Posto Mutum
+Verificando alertas: Enlonamento RRP (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Enlonamento RRP
+Verificando alertas: Terminal Inocencia (threshold: 15)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Terminal Inocencia
+Verificando alertas: Patio Carregado INO (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Patio Carregado INO
+Verificando alertas: Patio Vazio INO (threshold: 5)
+✅ Resumo por Hora carregado: 4255 registros
+ℹ️ Nenhum alerta para Patio Vazio INO
+✅ Analytics RRP processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade RRP processada com sucesso!
+✅ RRP CONCLUÍDA - Próxima unidade pode iniciar
+
+🔄 AGUARDANDO PROCESSAMENTO DE TLS...
+⏳ Outras unidades aguardarão TLS terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: TLS
+Empresa Frotalog: TLA - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-22
+
+[1/4] Baixando relatório C09...
+💻 Configurando Chrome para ambiente local...
+=== Iniciando download C09: TLA - TRANSP. CELULOSE ===
+Fazendo login no Frotalog...
+Login enviado.
+Pop-up de sessão tratado.
+Navegando para relatório C09...
+Frame 'main' carregado.
+Entrou em Dirigibilidade.
+Relatório C09 selecionado.
+Selecionando empresa: TLA - TRANSP. CELULOSE
+Empresa 'TLA - TRANSP. CELULOSE' selecionada.
+Configurando período: 2025-07-01 a 2025-07-22
+Modo 'Período' selecionado.
+Período configurado.
+Configurando formato e gerando relatório...
+Formato XLSX selecionado.
+Botão 'Visualizar Relatório' clicado.
+Janela de visualização fechada.
+Aguardando relatório ficar pronto...
+Clicou em 'Listar Relatórios'.
+Tentativa 1: elemento status não encontrado.
+Tentativa 2: status 'Aguardando Processamento' - aguardando...
+Tentativa 3: status 'Aguardando Processamento' - aguardando...
+Relatório pronto na tentativa 4.
+Download iniciado.
+Aguardando conclusão do download...
+Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx
+=== Download C09 concluído com sucesso ===
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 31925 registros
+Após filtro POIs: 9846 registros
+Após agrupamento: 8596 registros
+=== Processamento concluído: 8596 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Bases de Dados/CREARE/TLS/C09/2025/07. Julho/C09 01 a 22.07.2025.xlsx
+Excluindo arquivo antigo: C09 01 a 22.07.2025.xlsx
+✅ Upload concluído: C09 01 a 22.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Bases de Dados/CREARE/TLS/C09 Original/2025/07. Julho/C09 01 a 22.07.2025.xlsx
+Excluindo arquivo antigo: C09 01 a 22.07.2025.xlsx
+✅ Upload concluído: C09 01 a 22.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para TLS...
+=== Analytics TLS - 2025-07-22 ===
+Dados carregados do buffer: 8596 registros
+TPV PA Celulose para 2025-07-21: 1.28h
+DM Manutenção para 2025-07-21: 31.00h
+✅ Reports carregado: 1 registros
+⚠️ Data 2025-07-21 já existe no arquivo reports
+Processando candles: PA Celulose
+✅ Candles carregado: 28070 registros
+✅ Resumo por Hora carregado: 4255 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Manutencao Celulose
+✅ Candles carregado: 28080 registros
+✅ Resumo por Hora carregado: 4255 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica
+✅ Candles carregado: 28080 registros
+✅ Resumo por Hora carregado: 4255 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Descarga TAP
+✅ Candles carregado: 28094 registros
+✅ Resumo por Hora carregado: 4258 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina Central JSL
+✅ Candles carregado: 28120 registros
+✅ Resumo por Hora carregado: 4260 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas...
+Verificando alertas: EXPEDICAO - CELULOSE - ZONA DE CARREG. (threshold: 7)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para EXPEDICAO - CELULOSE - ZONA DE CARREG.
+Verificando alertas: Descarga TAP (threshold: 7)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para Descarga TAP
+Verificando alertas: REBUCCI (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para REBUCCI
+Verificando alertas: CEMAVI (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para CEMAVI
+Verificando alertas: FEISCAR (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para FEISCAR
+Verificando alertas: DIESELTRONIC (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para DIESELTRONIC
+Verificando alertas: LM RADIADORES (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para LM RADIADORES
+Verificando alertas: ALBINO (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para ALBINO
+Verificando alertas: JDIESEL (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para JDIESEL
+Verificando alertas: TRUCK LAZER (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para TRUCK LAZER
+Verificando alertas: MS3 LAVA JATO (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para MS3 LAVA JATO
+Verificando alertas: PB LOPES SCANIA (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para PB LOPES SCANIA
+Verificando alertas: OFICINA CENTRAL JSL (threshold: 13)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para OFICINA CENTRAL JSL
+Verificando alertas: PB Lopes (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para PB Lopes
+Verificando alertas: Manutencao Celulose (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para Manutencao Celulose
+Verificando alertas: AREA EXTERNA SUZANO (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para AREA EXTERNA SUZANO
+Verificando alertas: FILA DE ABASTECIMENTO POSTO SUZANO (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para FILA DE ABASTECIMENTO POSTO SUZANO
+Verificando alertas: POSTO DE ABASTECIMENTO (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para POSTO DE ABASTECIMENTO
+Verificando alertas: Trajeto Posto (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para Trajeto Posto
+Verificando alertas: PA Celulose (threshold: 7)
+✅ Resumo por Hora carregado: 4263 registros
+✅ Candles carregado: 28122 registros
+⚠️ Alerta 'TLS_PACelulose_N4_22072025_060000' já existe no SharePoint
+✅ Alertas processados para PA Celulose
+Verificando alertas: MONTANINI (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para MONTANINI
+Verificando alertas: SELVIRIA (threshold: 5)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para SELVIRIA
+Verificando alertas: Carregamento Fabrica (threshold: 7)
+✅ Resumo por Hora carregado: 4263 registros
+✅ Candles carregado: 28122 registros
+⚠️ Alerta 'TLS_CarregamentoFabrica_N2_22072025_090000' já existe no SharePoint
+✅ Alertas processados para Carregamento Fabrica
+Verificando alertas: FILA DESCARGA APT (threshold: 7)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para FILA DESCARGA APT
+Verificando alertas: Oficina Central JSL (threshold: 13)
+✅ Resumo por Hora carregado: 4263 registros
+ℹ️ Nenhum alerta para Oficina Central JSL
+✅ Analytics TLS processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade TLS processada com sucesso!
+✅ TLS CONCLUÍDA - Próxima unidade pode iniciar
+
+============================================================
+RELATÓRIO FINAL
+============================================================
+✅ Sucessos: 2
+❌ Falhas: 0
+📊 Total: 2
+
+🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - 16:24:30
