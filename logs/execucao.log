@@ -1872,3 +1872,690 @@ RELATÓRIO FINAL
 📊 Total: 2
 
 🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - 17:16:51
+
+================================================================================
+EXECUÇÃO C09 - 2025-07-31 17:43:57
+================================================================================
+=== SISTEMA C09 INICIADO - 2025-07-31 17:43:57 ===
+Configurações carregadas: 2 unidades ativas
+Credenciais carregadas com sucesso
+Configurações de e-mail carregadas: 2 tipos
+POIs carregados para RRP: 15 ativos
+POIs carregados para TLS: 25 ativos
+=== Configuração completa carregada com sucesso ===
+Configuração validada com sucesso
+🔧 Modo de execução: COMPLETO
+💻 AMBIENTE LOCAL - Downloads: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads
+🔄 Modo COMPLETO - Processamento completo + alertas
+Iniciando processamento de 2 unidades...
+
+🔄 AGUARDANDO PROCESSAMENTO DE RRP...
+⏳ Outras unidades aguardarão RRP terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: RRP
+Empresa Frotalog: RB - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-31
+
+[1/4] Baixando relatório C09...
+🚀 Iniciando download C09: RB - TRANSP. CELULOSE
+📅 Período: 2025-07-01 → 2025-07-31
+🔧 Configurando Chrome para ambiente local...
+✅ ChromeDriver inicializado no ambiente local
+🔐 Fazendo login no Frotalog...
+✅ Login enviado
+✅ Pop-up de sessão tratado
+🧭 Navegando para relatório C09...
+✅ Frame 'main' carregado
+✅ Menu Dirigibilidade acessado
+✅ Relatório C09 selecionado
+🏢 Selecionando empresa: RB - TRANSP. CELULOSE
+✅ Empresa 'RB - TRANSP. CELULOSE' selecionada
+📅 Configurando período: 2025-07-01 a 2025-07-31
+✅ Modo 'Período' selecionado
+✅ Período configurado
+📊 Configurando formato e gerando relatório...
+✅ Formato XLSX selecionado
+✅ Botão 'Visualizar Relatório' clicado
+✅ Janela de visualização fechada
+⏳ Aguardando relatório ficar pronto...
+✅ 'Listar Relatórios' clicado
+✅ Relatório pronto (tentativa 3)
+✅ Download iniciado
+📥 Aguardando conclusão do download...
+✅ Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx (5.8MB)
+🎉 Download C09 concluído: RB - TRANSP. CELULOSE
+✅ WebDriver fechado
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 71305 registros
+Após filtro POIs: 51841 registros
+Após agrupamento: 45546 registros
+=== Processamento concluído: 45546 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: RRP em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+📁 Criando pasta: C09 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: RRP em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+📁 Criando pasta: C09 Original em /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para RRP...
+=== Analytics RRP - 2025-07-31 ===
+Dados carregados do buffer: 45546 registros
+TPV PA AGUA CLARA para 2025-07-30: 1.40h
+DM Manutenção para 2025-07-30: 56.91h
+✅ Reports carregado: 1 registros
+⚠️ Data 2025-07-30 já existe no arquivo reports
+Processando candles: Descarga Inocencia
+⚠️ RWD4B32 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMG6H57 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMG9I17 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F95 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G01 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G04 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G17 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G26 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G67 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL4A15 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F90 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F92 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G05 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G38 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G23 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE4C10 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G18 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G28 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G27 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G21 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE7D14 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE7D11 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL4A18 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL5J46 em Descarga Inocencia: Saída ignorada (ainda no POI)
+📊 Descarga Inocencia: 4578 registros → 4578 entradas, 4554 saídas válidas
+   ⚠️ 24 saídas ignoradas (veículos ainda no POI)
+✅ Descarga Inocencia: 24 veículos presentes no final do período
+✅ Candles carregado: 40991 registros
+✅ Resumo por Hora carregado: 6122 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica RRP
+⚠️ SYD5G33 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+⚠️ SYD5G64 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+⚠️ SYD5G31 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+⚠️ SYD5G20 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+📊 Carregamento Fabrica RRP: 5011 registros → 5011 entradas, 5007 saídas válidas
+   ⚠️ 4 saídas ignoradas (veículos ainda no POI)
+✅ Carregamento Fabrica RRP: 4 veículos presentes no final do período
+✅ Candles carregado: 41002 registros
+✅ Resumo por Hora carregado: 6123 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: PA AGUA CLARA
+⚠️ SYD5G58 em PA AGUA CLARA: Saída ignorada (ainda no POI)
+⚠️ SYD5G63 em PA AGUA CLARA: Saída ignorada (ainda no POI)
+📊 PA AGUA CLARA: 2791 registros → 2791 entradas, 2789 saídas válidas
+   ⚠️ 2 saídas ignoradas (veículos ainda no POI)
+✅ PA AGUA CLARA: 2 veículos presentes no final do período
+✅ Candles carregado: 41011 registros
+✅ Resumo por Hora carregado: 6124 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina JSL
+⚠️ SYD5F96 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G51 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G10 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G49 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G54 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G32 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYE7D16 em Oficina JSL: Saída ignorada (ainda no POI)
+📊 Oficina JSL: 692 registros → 692 entradas, 685 saídas válidas
+   ⚠️ 7 saídas ignoradas (veículos ainda no POI)
+✅ Oficina JSL: 7 veículos presentes no final do período
+✅ Candles carregado: 41018 registros
+✅ Resumo por Hora carregado: 6125 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas por GRUPO...
+❌ Erro no sistema de alertas: 'AnalyticsProcessor' object has no attribute '_obter_grupos_alertas'
+✅ Analytics RRP processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade RRP processada com sucesso!
+✅ RRP CONCLUÍDA - Próxima unidade pode iniciar
+
+🔄 AGUARDANDO PROCESSAMENTO DE TLS...
+⏳ Outras unidades aguardarão TLS terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: TLS
+Empresa Frotalog: TLA - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-31
+
+[1/4] Baixando relatório C09...
+🚀 Iniciando download C09: TLA - TRANSP. CELULOSE
+📅 Período: 2025-07-01 → 2025-07-31
+🔧 Configurando Chrome para ambiente local...
+✅ ChromeDriver inicializado no ambiente local
+🔐 Fazendo login no Frotalog...
+✅ Login enviado
+✅ Pop-up de sessão tratado
+🧭 Navegando para relatório C09...
+✅ Frame 'main' carregado
+✅ Menu Dirigibilidade acessado
+✅ Relatório C09 selecionado
+🏢 Selecionando empresa: TLA - TRANSP. CELULOSE
+✅ Empresa 'TLA - TRANSP. CELULOSE' selecionada
+📅 Configurando período: 2025-07-01 a 2025-07-31
+✅ Modo 'Período' selecionado
+✅ Período configurado
+📊 Configurando formato e gerando relatório...
+✅ Formato XLSX selecionado
+✅ Botão 'Visualizar Relatório' clicado
+✅ Janela de visualização fechada
+⏳ Aguardando relatório ficar pronto...
+✅ 'Listar Relatórios' clicado
+✅ Relatório pronto (tentativa 3)
+✅ Download iniciado
+📥 Aguardando conclusão do download...
+✅ Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx (4.0MB)
+🎉 Download C09 concluído: TLA - TRANSP. CELULOSE
+✅ WebDriver fechado
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 48576 registros
+Após filtro POIs: 15314 registros
+Após agrupamento: 13714 registros
+=== Processamento concluído: 13714 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: TLS em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+📁 Criando pasta: C09 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: TLS em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+📁 Criando pasta: C09 Original em /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para TLS...
+=== Analytics TLS - 2025-07-31 ===
+Dados carregados do buffer: 13714 registros
+TPV PA Celulose para 2025-07-30: 1.76h
+DM Manutenção para 2025-07-30: 24.99h
+✅ Reports carregado: 1 registros
+⚠️ Data 2025-07-30 já existe no arquivo reports
+Processando candles: PA Celulose
+⚠️ RBL2B79 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ APTJSL2 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RHE5I48 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RWG1B55 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RTF1I36 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RWJ4H09 em PA Celulose: Saída ignorada (ainda no POI)
+📊 PA Celulose: 2422 registros → 2422 entradas, 2416 saídas válidas
+   ⚠️ 6 saídas ignoradas (veículos ainda no POI)
+✅ PA Celulose: 6 veículos presentes no final do período
+✅ Candles carregado: 41019 registros
+✅ Resumo por Hora carregado: 6125 registros
+⚠️ Arquivo reports não encontrado no SharePoint: (None, None, "503 Server Error: Service Unavailable for url: https://suzano.sharepoint.com/sites/Controleoperacional/_api/Web/getFileByServerRelativeUrl('%2Fsites%2FControleoperacional%2FDocumentos%20Compartilhados%2FTeste_BOT%2FCREARE%2FReports%2Fbase_dados_reports.xlsx')/$value")
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Manutencao Celulose
+📊 Manutencao Celulose: 20 registros → 20 entradas, 20 saídas válidas
+✅ Manutencao Celulose: 0 veículos presentes no final do período
+✅ Candles carregado: 41033 registros
+✅ Resumo por Hora carregado: 6126 registros
+⚠️ Arquivo reports não encontrado no SharePoint: 'Data'
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica
+⚠️ RIR5I81 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ JBK3B61 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ JBK3C91 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ SYD5G60 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+📊 Carregamento Fabrica: 2829 registros → 2829 entradas, 2825 saídas válidas
+   ⚠️ 4 saídas ignoradas (veículos ainda no POI)
+✅ Carregamento Fabrica: 4 veículos presentes no final do período
+✅ Candles carregado: 41033 registros
+✅ Resumo por Hora carregado: 6126 registros
+⚠️ Arquivo reports não encontrado no SharePoint: 'Data'
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Descarga TAP
+⚠️ JBJ4H88 em Descarga TAP: Saída ignorada (ainda no POI)
+📊 Descarga TAP: 2000 registros → 2000 entradas, 1999 saídas válidas
+   ⚠️ 1 saídas ignoradas (veículos ainda no POI)
+✅ Descarga TAP: 1 veículos presentes no final do período
+✅ Candles carregado: 41035 registros
+✅ Resumo por Hora carregado: 6127 registros
+⚠️ Arquivo reports não encontrado no SharePoint: 'Data'
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina Central JSL
+⚠️ RNZ4D49 em Oficina Central JSL: Saída ignorada (ainda no POI)
+📊 Oficina Central JSL: 204 registros → 204 entradas, 203 saídas válidas
+   ⚠️ 1 saídas ignoradas (veículos ainda no POI)
+✅ Oficina Central JSL: 1 veículos presentes no final do período
+✅ Candles carregado: 41045 registros
+✅ Resumo por Hora carregado: 6129 registros
+⚠️ Arquivo reports não encontrado no SharePoint: 'Data'
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas por GRUPO...
+❌ Erro no sistema de alertas: 'AnalyticsProcessor' object has no attribute '_obter_grupos_alertas'
+✅ Analytics TLS processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade TLS processada com sucesso!
+✅ TLS CONCLUÍDA - Próxima unidade pode iniciar
+
+============================================================
+RELATÓRIO FINAL
+============================================================
+✅ Sucessos: 2
+❌ Falhas: 0
+📊 Total: 2
+
+🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - 17:50:53
+
+================================================================================
+EXECUÇÃO C09 - 2025-07-31 18:01:58
+================================================================================
+=== SISTEMA C09 INICIADO - 2025-07-31 18:01:58 ===
+Configurações carregadas: 2 unidades ativas
+Credenciais carregadas com sucesso
+Configurações de e-mail carregadas: 2 tipos
+POIs carregados para RRP: 15 ativos
+POIs carregados para TLS: 25 ativos
+=== Configuração completa carregada com sucesso ===
+Configuração validada com sucesso
+🔧 Modo de execução: COMPLETO
+💻 AMBIENTE LOCAL - Downloads: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads
+🔄 Modo COMPLETO - Processamento completo + alertas
+Iniciando processamento de 2 unidades...
+
+🔄 AGUARDANDO PROCESSAMENTO DE RRP...
+⏳ Outras unidades aguardarão RRP terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: RRP
+Empresa Frotalog: RB - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-31
+
+[1/4] Baixando relatório C09...
+🚀 Iniciando download C09: RB - TRANSP. CELULOSE
+📅 Período: 2025-07-01 → 2025-07-31
+🔧 Configurando Chrome para ambiente local...
+✅ ChromeDriver inicializado no ambiente local
+🔐 Fazendo login no Frotalog...
+✅ Login enviado
+✅ Pop-up de sessão tratado
+🧭 Navegando para relatório C09...
+✅ Frame 'main' carregado
+✅ Menu Dirigibilidade acessado
+✅ Relatório C09 selecionado
+🏢 Selecionando empresa: RB - TRANSP. CELULOSE
+✅ Empresa 'RB - TRANSP. CELULOSE' selecionada
+📅 Configurando período: 2025-07-01 a 2025-07-31
+✅ Modo 'Período' selecionado
+✅ Período configurado
+📊 Configurando formato e gerando relatório...
+✅ Formato XLSX selecionado
+✅ Botão 'Visualizar Relatório' clicado
+✅ Janela de visualização fechada
+⏳ Aguardando relatório ficar pronto...
+✅ 'Listar Relatórios' clicado
+✅ Relatório pronto (tentativa 3)
+✅ Download iniciado
+📥 Aguardando conclusão do download...
+✅ Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx (5.8MB)
+🎉 Download C09 concluído: RB - TRANSP. CELULOSE
+✅ WebDriver fechado
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 71328 registros
+Após filtro POIs: 51859 registros
+Após agrupamento: 45560 registros
+=== Processamento concluído: 45560 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: RRP em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+📁 Criando pasta: C09 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: RRP em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+📁 Criando pasta: C09 Original em /Documentos Compartilhados/Teste_BOT/CREARE/RRP
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/RRP/C09 Original/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para RRP...
+=== Analytics RRP - 2025-07-31 ===
+Dados carregados do buffer: 45560 registros
+TPV PA AGUA CLARA para 2025-07-30: 1.40h
+DM Manutenção para 2025-07-30: 56.91h
+⚠️ Arquivo reports não encontrado no SharePoint: 'Data'
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Descarga Inocencia
+⚠️ RWD4B32 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMG6H57 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMG9E17 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMG9I17 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SMH0F11 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F95 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G01 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G04 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G17 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G26 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G67 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL4A15 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F90 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5F92 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G05 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G38 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G52 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G23 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE4C10 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G28 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G27 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYD5G21 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE7D14 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYE7D11 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL4A18 em Descarga Inocencia: Saída ignorada (ainda no POI)
+⚠️ SYL5J46 em Descarga Inocencia: Saída ignorada (ainda no POI)
+📊 Descarga Inocencia: 4581 registros → 4581 entradas, 4555 saídas válidas
+   ⚠️ 26 saídas ignoradas (veículos ainda no POI)
+✅ Descarga Inocencia: 26 veículos presentes no final do período
+⚠️ Candles não encontrado: Worksheet named 'Candles' not found
+⚠️ Resumo por Hora não encontrado: Worksheet named 'Resumo por Hora' not found
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica RRP
+⚠️ SYD5G33 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+⚠️ SYD5G64 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+⚠️ SYD5G16 em Carregamento Fabrica RRP: Saída ignorada (ainda no POI)
+📊 Carregamento Fabrica RRP: 5013 registros → 5013 entradas, 5010 saídas válidas
+   ⚠️ 3 saídas ignoradas (veículos ainda no POI)
+✅ Carregamento Fabrica RRP: 3 veículos presentes no final do período
+✅ Candles carregado: 9136 registros
+✅ Resumo por Hora carregado: 738 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: PA AGUA CLARA
+⚠️ SYD5G63 em PA AGUA CLARA: Saída ignorada (ainda no POI)
+📊 PA AGUA CLARA: 2791 registros → 2791 entradas, 2790 saídas válidas
+   ⚠️ 1 saídas ignoradas (veículos ainda no POI)
+✅ PA AGUA CLARA: 1 veículos presentes no final do período
+✅ Candles carregado: 19159 registros
+✅ Resumo por Hora carregado: 1477 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina JSL
+⚠️ SYD5F96 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G51 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G10 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G49 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G54 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYD5G32 em Oficina JSL: Saída ignorada (ainda no POI)
+⚠️ SYE7D16 em Oficina JSL: Saída ignorada (ainda no POI)
+📊 Oficina JSL: 692 registros → 692 entradas, 685 saídas válidas
+   ⚠️ 7 saídas ignoradas (veículos ainda no POI)
+✅ Oficina JSL: 7 veículos presentes no final do período
+✅ Candles carregado: 24740 registros
+✅ Resumo por Hora carregado: 2215 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas por GRUPO...
+❌ Erro no sistema de alertas: 'AnalyticsProcessor' object has no attribute '_obter_grupos_alertas'
+✅ Analytics RRP processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade RRP processada com sucesso!
+✅ RRP CONCLUÍDA - Próxima unidade pode iniciar
+
+🔄 AGUARDANDO PROCESSAMENTO DE TLS...
+⏳ Outras unidades aguardarão TLS terminar completamente
+
+============================================================
+PROCESSANDO UNIDADE: TLS
+Empresa Frotalog: TLA - TRANSP. CELULOSE
+============================================================
+Período COMPLETO: 2025-07-01 até 2025-07-31
+
+[1/4] Baixando relatório C09...
+🚀 Iniciando download C09: TLA - TRANSP. CELULOSE
+📅 Período: 2025-07-01 → 2025-07-31
+🔧 Configurando Chrome para ambiente local...
+✅ ChromeDriver inicializado no ambiente local
+🔐 Fazendo login no Frotalog...
+✅ Login enviado
+✅ Pop-up de sessão tratado
+🧭 Navegando para relatório C09...
+✅ Frame 'main' carregado
+✅ Menu Dirigibilidade acessado
+✅ Relatório C09 selecionado
+🏢 Selecionando empresa: TLA - TRANSP. CELULOSE
+✅ Empresa 'TLA - TRANSP. CELULOSE' selecionada
+📅 Configurando período: 2025-07-01 a 2025-07-31
+✅ Modo 'Período' selecionado
+✅ Período configurado
+📊 Configurando formato e gerando relatório...
+✅ Formato XLSX selecionado
+✅ Botão 'Visualizar Relatório' clicado
+✅ Janela de visualização fechada
+⏳ Aguardando relatório ficar pronto...
+✅ 'Listar Relatórios' clicado
+✅ Relatório pronto (tentativa 3)
+✅ Download iniciado
+📥 Aguardando conclusão do download...
+✅ Download finalizado: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx (4.0MB)
+🎉 Download C09 concluído: TLA - TRANSP. CELULOSE
+✅ WebDriver fechado
+
+[2/4] Processando dados...
+=== Iniciando processamento: C:\Users\eusebioagj\AppData\Local\Temp\c09_downloads\report.xlsx ===
+C:\Users\eusebioagj\AppData\Local\Programs\Python\Python311\Lib\site-packages\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no default style, apply openpyxl's default
+  warn("Workbook contains no default style, apply openpyxl's default")
+Dados carregados: 48593 registros
+Após filtro POIs: 15316 registros
+Após agrupamento: 13716 registros
+=== Processamento concluído: 13716 registros finais ===
+
+[3/4] Enviando para SharePoint...
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: TLS em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+📁 Criando pasta: C09 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+Upload para: /sites/Controleoperacional/Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho/C09 01 a 31.07.2025.xlsx
+🔍 Verificando pasta: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+📁 Pasta não existe, criando: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+📁 Criando pasta: Documentos Compartilhados em 
+✅ Pasta criada: /Documentos Compartilhados
+📁 Criando pasta: Teste_BOT em /Documentos Compartilhados
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT
+📁 Criando pasta: CREARE em /Documentos Compartilhados/Teste_BOT
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE
+📁 Criando pasta: TLS em /Documentos Compartilhados/Teste_BOT/CREARE
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+📁 Criando pasta: C09 Original em /Documentos Compartilhados/Teste_BOT/CREARE/TLS
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original
+📁 Criando pasta: 2025 em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025
+📁 Criando pasta: 07. Julho em /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025
+✅ Pasta criada: /Documentos Compartilhados/Teste_BOT/CREARE/TLS/C09 Original/2025/07. Julho
+Excluindo arquivo antigo: C09 01 a 31.07.2025.xlsx
+✅ Upload concluído: C09 01 a 31.07.2025.xlsx
+
+[4/4] Processamento de analytics...
+Processando analytics para TLS...
+=== Analytics TLS - 2025-07-31 ===
+Dados carregados do buffer: 13716 registros
+TPV PA Celulose para 2025-07-30: 1.76h
+DM Manutenção para 2025-07-30: 24.99h
+✅ Reports carregado: 1 registros
+⚠️ Data 2025-07-30 já existe no arquivo reports
+Processando candles: PA Celulose
+⚠️ RBL2B79 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ APTJSL2 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RHE5I48 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RWG1B55 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ SMB7B61 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RTF1I36 em PA Celulose: Saída ignorada (ainda no POI)
+⚠️ RWJ4H09 em PA Celulose: Saída ignorada (ainda no POI)
+📊 PA Celulose: 2423 registros → 2423 entradas, 2416 saídas válidas
+   ⚠️ 7 saídas ignoradas (veículos ainda no POI)
+✅ PA Celulose: 7 veículos presentes no final do período
+✅ Candles carregado: 26117 registros
+✅ Resumo por Hora carregado: 2953 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Manutencao Celulose
+📊 Manutencao Celulose: 20 registros → 20 entradas, 20 saídas válidas
+✅ Manutencao Celulose: 0 veículos presentes no final do período
+✅ Candles carregado: 30956 registros
+✅ Resumo por Hora carregado: 3692 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Carregamento Fabrica
+⚠️ RIR5I81 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ JBK3B61 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ JBK3C91 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+⚠️ SYD5G60 em Carregamento Fabrica: Saída ignorada (ainda no POI)
+📊 Carregamento Fabrica: 2829 registros → 2829 entradas, 2825 saídas válidas
+   ⚠️ 4 saídas ignoradas (veículos ainda no POI)
+✅ Carregamento Fabrica: 4 veículos presentes no final do período
+✅ Candles carregado: 30996 registros
+✅ Resumo por Hora carregado: 4328 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Descarga TAP
+⚠️ JBJ4H88 em Descarga TAP: Saída ignorada (ainda no POI)
+📊 Descarga TAP: 2000 registros → 2000 entradas, 1999 saídas válidas
+   ⚠️ 1 saídas ignoradas (veículos ainda no POI)
+✅ Descarga TAP: 1 veículos presentes no final do período
+✅ Candles carregado: 36650 registros
+✅ Resumo por Hora carregado: 5066 registros
+✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+Processando candles: Oficina Central JSL
+⚠️ RNZ4D49 em Oficina Central JSL: Saída ignorada (ainda no POI)
+📊 Oficina Central JSL: 204 registros → 204 entradas, 203 saídas válidas
+   ⚠️ 1 saídas ignoradas (veículos ainda no POI)
+✅ Oficina Central JSL: 1 veículos presentes no final do período
+✅ Candles carregado: 40649 registros
+✅ Resumo por Hora carregado: 5628 registros
+✅ Reports carregado: 1 registros

@@ -31,9 +31,9 @@ def criar_planilha_configuracao():
     
     # Aba 2: POIs RRP
     df_pois_rrp = pd.DataFrame([
-        {"ponto_interesse": "PA AGUA CLARA", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 8, "ativo": True},
+        {"ponto_interesse": "PA AGUA CLARA", "grupo": "P.A Agua Clara", "sla_horas": 0, "threshold_alerta": 8, "ativo": True},
         {"ponto_interesse": "Carregamento RRp", "grupo": "Carregamento", "sla_horas": 1.0, "threshold_alerta": 8, "ativo": True},
-        {"ponto_interesse": "Descarga Inocencia", "grupo": "Descarregamento", "sla_horas": 1.1833, "threshold_alerta": 15, "ativo": True},
+        {"ponto_interesse": "Desc. INO", "grupo": "Descarregamento", "sla_horas": 1.1833, "threshold_alerta": 15, "ativo": True},
         {"ponto_interesse": "Manutenção Campo Grande", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "Manutencao fabrica", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "Manutenção Geral JSL RRP", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
@@ -51,7 +51,7 @@ def criar_planilha_configuracao():
     # Aba 3: POIs TLS  
     df_pois_tls = pd.DataFrame([
         {"ponto_interesse": "EXPEDICAO - CELULOSE - ZONA DE CARREG.", "grupo": "Carregamento", "sla_horas": 1.0, "threshold_alerta": 7, "ativo": True},
-        {"ponto_interesse": "Descarga TAP", "grupo": "Descarregamento", "sla_horas": 0.9167, "threshold_alerta": 7, "ativo": True},
+        {"ponto_interesse": "Descarga TAP", "grupo": "Terminal", "sla_horas": 0.9167, "threshold_alerta": 7, "ativo": True},
         {"ponto_interesse": "REBUCCI", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "CEMAVI", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "FEISCAR", "grupo": "Manutenção", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
@@ -69,7 +69,7 @@ def criar_planilha_configuracao():
         {"ponto_interesse": "FILA DE ABASTECIMENTO POSTO SUZANO", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "POSTO DE ABASTECIMENTO", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "Trajeto Posto", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
-        {"ponto_interesse": "PA Celulose", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 7, "ativo": True},
+        {"ponto_interesse": "PA Celulose", "grupo": "P.A Celulose", "sla_horas": 0, "threshold_alerta": 7, "ativo": True},
         {"ponto_interesse": "MONTANINI", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "SELVIRIA", "grupo": "Parada Operacional", "sla_horas": 0, "threshold_alerta": 5, "ativo": True},
         {"ponto_interesse": "Carregamento Fabrica", "grupo": "Fabrica", "sla_horas": 1.0, "threshold_alerta": 7, "ativo": True},

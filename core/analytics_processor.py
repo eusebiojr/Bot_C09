@@ -276,36 +276,57 @@ class AnalyticsProcessor:
         
         return eventos, df_contagem
     
-    def identificar_desvios_poi(self, poi: str, threshold: int) -> pd.DataFrame:
+    def identificar_desvios_grupo(self, grupo: str, threshold: int) -> pd.DataFrame:
         """
-        Identifica desvios (acúmulo de veículos) para um POI.
+        Identifica desvios (acúmulo de veículos) para um GRUPO de POIs.
+        NOVO: Analisa grupo consolidado ao invés de POI individual.
         
         Args:
-            poi: Ponto de interesse
+            grupo: Nome do grupo (ex: "Parada Operacional", "Manutenção")
             threshold: Limite de veículos para gerar alerta
             
         Returns:
             DataFrame com alertas identificados
         """
         try:
-            # Gera dados sentinela (últimos 4 dias)
-            df_sentinela = self._gerar_dados_sentinela(poi)
+            print(f"🔍 Analisando desvios do grupo: {grupo}")
             
-            if df_sentinela.empty:
+            # 1. Identifica POIs que pertencem a este grupo
+            pois_do_grupo = []
+            config_pois = self.config["pois_por_unidade"].get(self.unidade, [])
+            
+            for poi_config in config_pois:
+                if (poi_config.get("grupo") == grupo and 
+                    poi_config.get("ativo", True) and 
+                    poi_config.get("threshold_alerta", 0) > 0):
+                    pois_do_grupo.append(poi_config["ponto_interesse"])
+            
+            if not pois_do_grupo:
+                print(f"⚠️ Nenhum POI ativo encontrado para grupo {grupo}")
                 return pd.DataFrame()
             
-            # Identifica desvios
-            df_sentinela["n_veiculos"] = df_sentinela["Veículos no POI"].fillna('').apply(
+            print(f"📋 POIs do grupo {grupo}: {pois_do_grupo}")
+            
+            # 2. Gera dados sentinela consolidados para o grupo
+            df_grupo_consolidado = self._gerar_dados_sentinela_grupo(grupo, pois_do_grupo)
+            
+            if df_grupo_consolidado.empty:
+                print(f"⚠️ Nenhum dado histórico para grupo {grupo}")
+                return pd.DataFrame()
+            
+            # 3. Identifica desvios baseado no threshold do grupo
+            df_grupo_consolidado["n_veiculos"] = df_grupo_consolidado["Veículos no Grupo"].fillna('').apply(
                 lambda x: len([v for v in str(x).split(';') if v.strip()])
             )
             
-            df_filtrado = df_sentinela[df_sentinela["n_veiculos"] >= threshold].copy()
+            df_filtrado = df_grupo_consolidado[df_grupo_consolidado["n_veiculos"] >= threshold].copy()
             df_filtrado.sort_values("Hora", inplace=True)
             
             if df_filtrado.empty:
+                print(f"ℹ️ Nenhum desvio detectado para grupo {grupo} (threshold: {threshold})")
                 return pd.DataFrame()
             
-            # Gera alertas com escalation
+            # 4. Gera alertas com escalation (por grupo)
             alertas = []
             ultimo_alerta = None
             nivel = 0
@@ -320,35 +341,174 @@ class AnalyticsProcessor:
                     nivel = min(nivel + 1, 4)
                 ultimo_alerta = hora_atual
                 
-                # Cria título do alerta
-                titulo = self._gerar_titulo_alerta(poi, hora_atual, nivel)
-                veiculos = str(row["Veículos no POI"]).split(";")
+                # Cria título do alerta (agora com grupo)
+                titulo = self._gerar_titulo_alerta_grupo(grupo, hora_atual, nivel)
                 
-                # Gera alerta para cada veículo
-                for v in veiculos:
+                # Pega detalhes dos POIs envolvidos
+                detalhes_pois = row.get("Detalhes_POIs", "")
+                veiculos_grupo = str(row["Veículos no Grupo"]).split(";")
+                
+                # Gera alerta para o grupo (não individual)
+                for v in veiculos_grupo:
                     if v.strip():
                         alertas.append({
                             "Título": titulo,
                             "Placa": v.strip(),
-                            "Ponto_de_Interesse": poi,
+                            "Ponto_de_Interesse": grupo,  # ✅ MUDANÇA: Usa GRUPO aqui
+                            "Detalhes_POIs": detalhes_pois,  # Detalhes dos POIs específicos
                             "Data_Hora_Desvio": hora_atual,
                             "Data_Hora_Entrada": None,
                             "Tempo": None,
-                            "Nível": f"Tratativa N{nivel}"
+                            "Nível": f"Tratativa N{nivel}",
+                            "Grupo": grupo
                         })
             
             df_alertas = pd.DataFrame(alertas)
             
             if not df_alertas.empty:
+                print(f"🚨 {len(df_alertas)} alertas gerados para grupo {grupo}")
                 # Enriquece com dados de entrada
-                df_alertas = self._enriquecer_alertas_entrada(df_alertas)
+                df_alertas = self._enriquecer_alertas_entrada_grupo(df_alertas)
             
             return df_alertas
             
         except Exception as e:
-            print(f"Erro ao identificar desvios para {poi}: {e}")
-            return pd.DataFrame()
+            print(f"❌ Erro ao identificar desvios para grupo {grupo}: {e}")
     
+    def _gerar_dados_sentinela_grupo(self, grupo: str, pois_do_grupo: list) -> pd.DataFrame:
+        """
+        Gera dados sentinela consolidados para um grupo de POIs.
+        
+        Args:
+            grupo: Nome do grupo
+            pois_do_grupo: Lista de POIs que pertencem ao grupo
+            
+        Returns:
+            DataFrame consolidado por hora para o grupo
+        """
+        try:
+            hoje = datetime.now().date()
+            dias = [hoje - timedelta(days=i) for i in range(4)]
+            
+            # Carrega dados do SharePoint
+            df_resumo_hora = self.reports_manager.carregar_candles_sharepoint("Resumo por Hora")
+            
+            if df_resumo_hora.empty:
+                return pd.DataFrame()
+            
+            # Filtra dados dos POIs do grupo nos últimos 4 dias
+            df_grupo = df_resumo_hora[
+                (df_resumo_hora["POI"].isin(pois_do_grupo)) &
+                (df_resumo_hora["Hora"].dt.date.isin(dias))
+            ].copy()
+            
+            if df_grupo.empty:
+                return pd.DataFrame()
+            
+            # Consolida por hora (agrupa todos os POIs do grupo)
+            df_consolidado = []
+            
+            # Pega todas as horas únicas
+            horas_unicas = df_grupo["Hora"].unique()
+            
+            for hora in horas_unicas:
+                df_hora = df_grupo[df_grupo["Hora"] == hora]
+                
+                # Consolida veículos de todos os POIs desta hora
+                todos_veiculos = set()
+                detalhes_pois = []
+                
+                for _, row in df_hora.iterrows():
+                    poi = row["POI"]
+                    veiculos_poi = str(row.get("Veículos no POI", "")).split(";")
+                    count_poi = len([v for v in veiculos_poi if v.strip()])
+                    
+                    if count_poi > 0:
+                        detalhes_pois.append(f"{poi}({count_poi})")
+                        todos_veiculos.update([v.strip() for v in veiculos_poi if v.strip()])
+                
+                # Cria registro consolidado
+                df_consolidado.append({
+                    "Hora": hora,
+                    "Grupo": grupo,
+                    "Veículos no Grupo": ";".join(sorted(todos_veiculos)),
+                    "Total_Veiculos": len(todos_veiculos),
+                    "Detalhes_POIs": " + ".join(detalhes_pois),
+                    "POIs_Envolvidos": len(df_hora)
+                })
+            
+            resultado = pd.DataFrame(df_consolidado)
+            print(f"📊 Dados consolidados {grupo}: {len(resultado)} horas analisadas")
+            
+            return resultado
+            
+        except Exception as e:
+            print(f"❌ Erro ao gerar dados sentinela grupo {grupo}: {e}")
+            return pd.DataFrame()
+
+    def _gerar_titulo_alerta_grupo(self, grupo: str, hora: datetime, nivel: int) -> str:
+        """Gera título único do alerta para grupo."""
+        data_str = hora.strftime("%d%m%Y")
+        hora_str = hora.strftime("%H%M%S")
+        grupo_clean = grupo.replace(' ', '').replace('ç', 'c').replace('ã', 'a')
+        return f"{self.unidade}_{grupo_clean}_N{nivel}_{data_str}_{hora_str}"
+
+    def _enriquecer_alertas_entrada_grupo(self, df_alertas: pd.DataFrame) -> pd.DataFrame:
+        """
+        Enriquece alertas de grupo com dados de entrada dos veículos.
+        Busca entrada em qualquer POI do grupo.
+        """
+        if df_alertas.empty:
+            return df_alertas
+        
+        try:
+            # Carrega dados de candles do SharePoint
+            df_candles = self.reports_manager.carregar_candles_sharepoint("Candles")
+            
+            if df_candles.empty:
+                return df_alertas
+            
+            df_entradas = df_candles[df_candles["Evento"].str.lower() == "entrada"]
+            
+            def buscar_hora_entrada_grupo(row):
+                """Busca última entrada do veículo em qualquer POI do grupo."""
+                grupo = row["Grupo"]
+                placa = row["Placa"]
+                
+                # Identifica POIs do grupo
+                config_pois = self.config["pois_por_unidade"].get(self.unidade, [])
+                pois_do_grupo = [
+                    poi["ponto_interesse"] for poi in config_pois 
+                    if poi.get("grupo") == grupo and poi.get("ativo", True)
+                ]
+                
+                # Busca entradas em qualquer POI do grupo
+                entradas = df_entradas[
+                    (df_entradas["Veículo"] == placa) &
+                    (df_entradas["POI"].isin(pois_do_grupo)) &
+                    (df_entradas["Data Evento"] <= row["Data_Hora_Desvio"])
+                ]
+                
+                return entradas["Data Evento"].max() if not entradas.empty else pd.NaT
+            
+            df_alertas["Data_Hora_Entrada"] = df_alertas.apply(buscar_hora_entrada_grupo, axis=1)
+            
+            def calcular_tempo_permanencia(row):
+                """Calcula tempo de permanência até agora."""
+                if pd.notnull(row["Data_Hora_Entrada"]):
+                    delta = datetime.now() - row["Data_Hora_Entrada"]
+                    return round(delta.total_seconds() / 3600, 2)
+                return None
+            
+            df_alertas["Tempo"] = df_alertas.apply(calcular_tempo_permanencia, axis=1)
+            
+            print(f"✅ Alertas de grupo enriquecidos com dados de entrada")
+            
+        except Exception as e:
+            print(f"❌ Erro ao enriquecer alertas de grupo: {e}")
+        
+        return df_alertas
+
     def _gerar_dados_sentinela(self, poi: str) -> pd.DataFrame:
         """Gera dados sentinela (últimos 4 dias) para um POI."""
         hoje = datetime.now().date()
@@ -572,29 +732,29 @@ class AnalyticsProcessor:
             return False
     
     def _processar_sistema_alertas(self):
-        """Processa sistema de alertas para todos os POIs da unidade."""
+        """Processa sistema de alertas para todos os GRUPOS da unidade."""
         try:
-            print("🚨 Processando sistema de alertas...")
+            print("🚨 Processando sistema de alertas por GRUPO...")
             
-            # Obtém POIs e thresholds
-            pois_thresholds = self._obter_pois_alertas()
+            # Obtém grupos e thresholds
+            grupos_thresholds = self._obter_grupos_alertas()
             
-            for poi, threshold in pois_thresholds.items():
-                print(f"Verificando alertas: {poi} (threshold: {threshold})")
+            for grupo, threshold in grupos_thresholds.items():
+                print(f"🔍 Verificando alertas: {grupo} (threshold: {threshold})")
                 
-                # Identifica desvios
-                df_alertas = self.identificar_desvios_poi(poi, threshold)
+                # Identifica desvios por GRUPO
+                df_alertas = self.identificar_desvios_grupo(grupo, threshold)
                 
                 if not df_alertas.empty:
                     # Envia alertas para SharePoint
                     sucesso_envio = self.enviar_alertas_sharepoint(df_alertas)
                     
                     if sucesso_envio:
-                        print(f"✅ Alertas processados para {poi}")
+                        print(f"✅ Alertas processados para grupo {grupo}")
                     else:
-                        print(f"⚠️ Falha ao enviar alertas para {poi}")
+                        print(f"⚠️ Falha ao enviar alertas para grupo {grupo}")
                 else:
-                    print(f"ℹ️ Nenhum alerta para {poi}")
+                    print(f"ℹ️ Nenhum alerta para grupo {grupo}")
             
         except Exception as e:
             print(f"❌ Erro no sistema de alertas: {e}")
