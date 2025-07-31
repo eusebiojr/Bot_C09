@@ -44,80 +44,6 @@ class AnalyticsProcessor:
             print(f"⚠️ Erro ao importar reports_sharepoint: {e}")
             self.reports_manager = None
     
-    def processar_tempo_real(self, horas_periodo: int = 4) -> bool:
-        """
-        Processamento de analytics em tempo real (só candles/reports).
-        Usado para execuções a cada 10 minutos.
-        
-        Args:
-            horas_periodo: Período em horas para buscar dados recentes
-            
-        Returns:
-            True se processamento bem-sucedido
-        """
-        try:
-            print(f"=== Analytics Tempo Real {self.unidade} - Últimas {horas_periodo}h ===")
-            
-            # Define período de análise
-            agora = datetime.now()
-            inicio_periodo = agora - timedelta(hours=horas_periodo)
-            
-            # Obtém POIs para candles desta unidade
-            if self.unidade == "RRP":
-                pois_candles = ["Descarga Inocencia", "Carregamento Fabrica RRP", "PA AGUA CLARA", "Oficina JSL"]
-            elif self.unidade == "TLS":
-                pois_candles = ["PA Celulose", "Manutencao Celulose", "Carregamento Fabrica", "Descarga TAP", "Oficina Central JSL"]
-            else:
-                print(f"⚠️ Unidade {self.unidade} não tem POIs configurados para tempo real")
-                return False
-            
-            # Processa cada POI (dados já existentes no SharePoint)
-            for poi in pois_candles:
-                print(f"Processando tempo real: {poi}")
-                
-                # Carrega dados existentes do SharePoint
-                try:
-                    df_candles_existente = self.reports_manager.carregar_candles_sharepoint("Candles")
-                    df_resumo_existente = self.reports_manager.carregar_candles_sharepoint("Resumo por Hora")
-                    
-                    if df_candles_existente.empty or df_resumo_existente.empty:
-                        print(f"⚠️ Dados históricos não encontrados para {poi}")
-                        continue
-                    
-                    # Filtra dados do período recente para este POI
-                    df_poi_recente = df_candles_existente[
-                        (df_candles_existente['POI'] == poi) &
-                        (df_candles_existente['Data Evento'] >= inicio_periodo)
-                    ]
-                    
-                    df_resumo_recente = df_resumo_existente[
-                        (df_resumo_existente['POI'] == poi) &
-                        (df_resumo_existente['Hora'] >= inicio_periodo)
-                    ]
-                    
-                    if not df_poi_recente.empty:
-                        print(f"📊 {poi}: {len(df_poi_recente)} eventos recentes processados")
-                    else:
-                        print(f"ℹ️ {poi}: Nenhum evento recente")
-                    
-                except Exception as e:
-                    print(f"⚠️ Erro ao processar {poi}: {e}")
-                    continue
-            
-            # Atualiza resumo base (sem recalcular métricas pesadas)
-            print("📈 Atualizando indicadores base...")
-            
-            # TPV e DM só calculamos no modo completo
-            # Aqui só mantemos a estrutura atualizada
-            sucesso_base = True  # Placeholder - implementar conforme necessário
-            
-            print(f"✅ Analytics tempo real {self.unidade} concluído")
-            return sucesso_base
-            
-        except Exception as e:
-            print(f"❌ Erro no processamento tempo real {self.unidade}: {e}")
-            return False
-    
     def carregar_planilha_buffer(self, buffer: BytesIO) -> pd.DataFrame:
         """
         Carrega planilha de um buffer em memória.
@@ -193,7 +119,6 @@ class AnalyticsProcessor:
     def gerar_candles_poi(self, df: pd.DataFrame, poi: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Gera dados de candles (eventos de entrada/saída) para um POI.
-        CORRIGIDO: Ignora saídas falsas de veículos que ainda estão no POI.
         
         Args:
             df: DataFrame com dados

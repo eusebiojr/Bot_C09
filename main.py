@@ -90,21 +90,17 @@ class C09Orchestrator:
     def _obter_periodo_execucao(self) -> tuple[datetime, datetime]:
         """
         Define período de execução baseado no modo.
-        
-        Returns:
-            Tuple com (data_inicial, data_final)
+        AMBOS OS MODOS usam período completo (01/mês - hoje).
         """
         hoje = datetime.now()
         
+        # SEMPRE usa período completo (01 do mês até hoje)
+        data_inicial = hoje.replace(day=1)
+        data_final = hoje
+        
         if self.modo_execucao == "CANDLES":
-            # Últimas 4 horas para garantir cobertura
-            data_inicial = hoje - timedelta(hours=4)
-            data_final = hoje
-            print(f"Período CANDLES: {data_inicial:%H:%M} até {data_final:%H:%M} (4h)")
+            print(f"Período CANDLES: {data_inicial.date()} até {data_final.date()} (completo)")
         else:
-            # Modo completo - 1º dia do mês até hoje
-            data_inicial = hoje.replace(day=1)
-            data_final = hoje
             print(f"Período COMPLETO: {data_inicial.date()} até {data_final.date()}")
         
         return data_inicial, data_final
@@ -132,27 +128,48 @@ class C09Orchestrator:
     
     def processar_unidade_modo_candles(self, unidade_config: dict) -> bool:
         """
-        Processamento rápido - só atualiza candles/reports (modo 10min).
-        
-        Args:
-            unidade_config: Configuração da unidade
-            
-        Returns:
-            True se processamento bem-sucedido
+        Modo CANDLES: Download completo (01-hoje) + processamento + atualiza APENAS candles.
+        NÃO executa: alertas, TPV/DM, upload arquivo principal.
         """
         unidade = unidade_config["unidade"]
+        empresa_frotalog = unidade_config["empresa_frotalog"]
         
         try:
-            print(f"\n🔄 CANDLES {unidade} - Atualizando reports...")
+            print(f"\n⚡ CANDLES {unidade} - Download e atualização de candles")
             
-            # Processamento de analytics em tempo real
-            sucesso = self._processar_analytics_tempo_real(unidade)
+            # 1. Obtém período completo (01/mês - hoje)
+            data_inicial, data_final = self._obter_periodo_execucao()
+            print(f"📅 Período: {data_inicial.date()} até {data_final.date()}")
             
-            if sucesso:
-                print(f"✅ {unidade} - Reports atualizados")
+            # 2. Download com período completo (igual ao modo COMPLETO)
+            print(f"📥 Baixando relatório C09...")
+            caminho_relatorio = self.scraper.baixar_relatorio_c09(
+                empresa_frotalog=empresa_frotalog,
+                data_inicial=data_inicial,
+                data_final=data_final
+            )
+            
+            # 3. Processamento completo dos dados
+            print(f"⚙️ Processando dados...")
+            processor = self._criar_processor_para_unidade(unidade)
+            buffer_tratado = processor.processar_relatorio_c09(caminho_relatorio)
+            
+            # 4. Atualiza APENAS candles (sem alertas, sem métricas pesadas)
+            print(f"📊 Atualizando candles (sem alertas)...")
+            sucesso_candles = self._processar_candles_sem_alertas(
+                unidade=unidade,
+                buffer_tratado=buffer_tratado,
+                data_referencia=data_final
+            )
+            
+            # 5. Limpeza do arquivo temporário
+            self._limpar_arquivo_temporario(caminho_relatorio)
+            
+            if sucesso_candles:
+                print(f"✅ CANDLES {unidade} - Atualizados com sucesso")
                 return True
             else:
-                print(f"❌ {unidade} - Falha na atualização")
+                print(f"⚠️ CANDLES {unidade} - Falha na atualização")
                 return False
                 
         except Exception as e:
@@ -160,6 +177,92 @@ class C09Orchestrator:
             self._log_erro_detalhado(e, f"Modo CANDLES - Unidade {unidade}")
             return False
     
+    def _processar_candles_sem_alertas(self, unidade: str, buffer_tratado: BytesIO, 
+                                    data_referencia: datetime) -> bool:
+        """
+        Processa apenas candles sem sistema de alertas (versão light para modo CANDLES).
+        
+        Args:
+            unidade: Nome da unidade
+            buffer_tratado: Buffer com dados processados
+            data_referencia: Data de referência
+            
+        Returns:
+            True se processamento bem-sucedido
+        """
+        try:
+            from core.analytics_processor import criar_analytics_processor
+            
+            processor_analytics = criar_analytics_processor(
+                unidade=unidade,
+                config=self.config
+            )
+            
+            # Carrega dados do buffer
+            df = processor_analytics.carregar_planilha_buffer(buffer_tratado)
+            if df.empty:
+                print("⚠️ Dados vazios para candles")
+                return True  # Não é erro, apenas sem dados novos
+            
+            print(f"📊 Processando candles com {len(df)} registros")
+            
+            # Define POIs para candles baseado na unidade
+            if unidade == "RRP":
+                pois_candles = ["Descarga Inocencia", "Carregamento Fabrica RRP", "PA AGUA CLARA", "Oficina JSL"]
+            elif unidade == "TLS":
+                pois_candles = ["PA Celulose", "Manutencao Celulose", "Carregamento Fabrica", "Descarga TAP", "Oficina Central JSL"]
+            else:
+                print(f"⚠️ Unidade {unidade} não configurada para candles")
+                return False
+            
+            # Processa candles para cada POI
+            mes_atual = data_referencia.month
+            ano_atual = data_referencia.year
+            
+            sucessos = 0
+            total_eventos = 0
+            
+            for poi in pois_candles:
+                print(f"📈 Processando candles: {poi}")
+                
+                # Gera candles para este POI (já com correção de saídas falsas)
+                df_eventos, df_resumo_hora = processor_analytics.gerar_candles_poi(df, poi)
+                
+                if not df_eventos.empty:
+                    # Atualiza candles no SharePoint
+                    sucesso = processor_analytics.reports_manager.atualizar_candles(
+                        df_eventos_novos=df_eventos,
+                        df_resumo_novos=df_resumo_hora,
+                        poi=poi,
+                        mes=mes_atual,
+                        ano=ano_atual
+                    )
+                    
+                    if sucesso:
+                        sucessos += 1
+                        total_eventos += len(df_eventos)
+                        print(f"✅ {poi}: {len(df_eventos)} eventos atualizados")
+                    else:
+                        print(f"⚠️ {poi}: Falha na atualização SharePoint")
+                else:
+                    print(f"ℹ️ {poi}: Nenhum evento no período")
+                    sucessos += 1  # Sem dados é normal, não é erro
+            
+            # Log final
+            print(f"📊 RESUMO CANDLES: {sucessos}/{len(pois_candles)} POIs processados")
+            print(f"📈 Total de eventos processados: {total_eventos}")
+            
+            # Considera sucesso se processou todos os POIs
+            return sucessos == len(pois_candles)
+            
+        except ImportError as e:
+            print(f"❌ Erro de import no processamento candles: {e}")
+            return False
+            
+        except Exception as e:
+            print(f"❌ Erro no processamento candles: {e}")
+            return False
+
     def processar_unidade_modo_completo(self, unidade_config: dict) -> bool:
         """
         Processamento completo - download + processamento + alertas (modo 1h).

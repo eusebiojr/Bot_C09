@@ -40,6 +40,7 @@ class SharePointUploader:
     def _criar_pasta_se_necessario(self, caminho_pasta: str) -> bool:
         """
         Cria pasta no SharePoint se não existir.
+        CORRIGIDO: Usa caminhos relativos corretos.
         
         Args:
             caminho_pasta: Caminho da pasta no SharePoint
@@ -50,47 +51,129 @@ class SharePointUploader:
         try:
             ctx = self._get_context()
             
+            # Remove site URL do caminho se presente
+            if caminho_pasta.startswith("/sites/"):
+                # Extrai apenas a parte após /sites/SITENAME/
+                partes = caminho_pasta.split('/')
+                if len(partes) > 3:
+                    # Reconstrói caminho relativo: /Documentos Compartilhados/...
+                    caminho_relativo = '/' + '/'.join(partes[3:])
+                else:
+                    caminho_relativo = caminho_pasta
+            else:
+                caminho_relativo = caminho_pasta
+            
+            print(f"🔍 Verificando pasta: {caminho_relativo}")
+            
             # Tenta acessar a pasta
-            pasta = ctx.web.get_folder_by_server_relative_url(caminho_pasta)
+            pasta = ctx.web.get_folder_by_server_relative_url(caminho_relativo)
             ctx.load(pasta)
             ctx.execute_query()
+            print(f"✅ Pasta já existe: {caminho_relativo}")
             return True
             
-        except Exception:
-            # Se falhar, tenta criar a pasta
-            try:
-                # Separa caminho em partes
-                partes_caminho = caminho_pasta.strip('/').split('/')
-                caminho_atual = ""
-                
-                for parte in partes_caminho:
-                    if not parte:
-                        continue
-                        
-                    caminho_anterior = caminho_atual
-                    caminho_atual = f"{caminho_atual}/{parte}" if caminho_atual else f"/{parte}"
+        except Exception as e:
+            print(f"📁 Pasta não existe, criando: {caminho_relativo}")
+            return self._criar_pasta_recursiva(ctx, caminho_relativo)
+
+    def _criar_pasta_recursiva(self, ctx, caminho_pasta: str) -> bool:
+        """
+        Cria pasta recursivamente no SharePoint.
+        
+        Args:
+            ctx: Contexto SharePoint
+            caminho_pasta: Caminho relativo da pasta
+            
+        Returns:
+            True se pasta foi criada
+        """
+        try:
+            # Remove barras iniciais/finais e divide o caminho
+            caminho_limpo = caminho_pasta.strip('/')
+            partes_caminho = caminho_limpo.split('/')
+            
+            # Inicia da pasta raiz (Documentos Compartilhados)
+            pasta_atual = ctx.web.root_folder
+            caminho_atual = ""
+            
+            for i, parte in enumerate(partes_caminho):
+                if not parte:
+                    continue
                     
+                caminho_atual = f"{caminho_atual}/{parte}" if caminho_atual else f"/{parte}"
+                
+                try:
                     # Verifica se esta parte do caminho existe
+                    pasta_teste = ctx.web.get_folder_by_server_relative_url(caminho_atual)
+                    ctx.load(pasta_teste)
+                    ctx.execute_query()
+                    pasta_atual = pasta_teste
+                    print(f"✅ Pasta existe: {caminho_atual}")
+                    
+                except Exception:
+                    # Pasta não existe, precisa criar
+                    print(f"📁 Criando pasta: {parte} em {caminho_atual.rsplit('/', 1)[0] if '/' in caminho_atual else 'raiz'}")
+                    
                     try:
-                        pasta = ctx.web.get_folder_by_server_relative_url(caminho_atual)
-                        ctx.load(pasta)
+                        pasta_atual = pasta_atual.folders.add(parte)
                         ctx.execute_query()
-                    except Exception:
-                        # Se não existir, cria
-                        if caminho_anterior:
-                            pasta_pai = ctx.web.get_folder_by_server_relative_url(caminho_anterior)
-                        else:
-                            pasta_pai = ctx.web.root_folder
+                        print(f"✅ Pasta criada: {caminho_atual}")
                         
-                        pasta_pai.folders.add(parte)
+                    except Exception as create_error:
+                        print(f"❌ Erro ao criar pasta '{parte}': {create_error}")
+                        # Tenta método alternativo
+                        return self._criar_pasta_alternativa(ctx, caminho_pasta)
+            
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro na criação recursiva: {e}")
+            return False
+
+    def _criar_pasta_alternativa(self, ctx, caminho_pasta: str) -> bool:
+        """
+        Método alternativo para criar pastas (usando lista de documentos).
+        
+        Args:
+            ctx: Contexto SharePoint
+            caminho_pasta: Caminho da pasta
+            
+        Returns:
+            True se pasta foi criada
+        """
+        try:
+            print(f"🔄 Tentando método alternativo para: {caminho_pasta}")
+            
+            # Usa biblioteca de documentos como base
+            doc_lib = ctx.web.default_document_library()
+            ctx.load(doc_lib)
+            ctx.execute_query()
+            
+            # Remove /Documentos Compartilhados/ do início se presente
+            caminho_sem_docs = caminho_pasta
+            if caminho_sem_docs.startswith('/Documentos Compartilhados/'):
+                caminho_sem_docs = caminho_sem_docs[len('/Documentos Compartilhados/'):]
+            elif caminho_sem_docs.startswith('Documentos Compartilhados/'):
+                caminho_sem_docs = caminho_sem_docs[len('Documentos Compartilhados/'):]
+            
+            # Cria pasta na biblioteca de documentos
+            partes = caminho_sem_docs.strip('/').split('/')
+            pasta_atual = doc_lib.root_folder
+            
+            for parte in partes:
+                if parte:
+                    try:
+                        pasta_atual = pasta_atual.folders.add(parte)
                         ctx.execute_query()
-                        print(f"Pasta criada: {caminho_atual}")
-                
-                return True
-                
-            except Exception as e:
-                print(f"Erro ao criar pasta {caminho_pasta}: {e}")
-                return False
+                        print(f"✅ Pasta alternativa criada: {parte}")
+                    except Exception as e:
+                        print(f"⚠️ Pasta pode já existir: {parte} ({e})")
+            
+            return True
+            
+        except Exception as e:
+            print(f"❌ Método alternativo falhou: {e}")
+            return False
     
     def _excluir_arquivo_antigo(self, caminho_pasta: str, nome_arquivo: str) -> bool:
         """
