@@ -193,6 +193,7 @@ class AnalyticsProcessor:
     def gerar_candles_poi(self, df: pd.DataFrame, poi: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Gera dados de candles (eventos de entrada/saída) para um POI.
+        CORRIGIDO: Ignora saídas falsas de veículos que ainda estão no POI.
         
         Args:
             df: DataFrame com dados
@@ -211,16 +212,71 @@ class AnalyticsProcessor:
         df_poi['Data Entrada'] = pd.to_datetime(df_poi['Data Entrada'], format='%d/%m/%Y %H:%M:%S', dayfirst=True, errors='coerce')
         df_poi['Data Saída'] = pd.to_datetime(df_poi['Data Saída'], format='%d/%m/%Y %H:%M:%S', dayfirst=True, errors='coerce')
         
-        # Cria eventos de entrada e saída
-        entradas = df_poi[['Veículo', 'Data Entrada']].copy()
+        # Padrões para detectar veículos que ainda estão no POI
+        PADROES_AINDA_NO_POI = [
+            "permaneceu no poi após o fim do período pesquisado",
+            "permaneceu no poi após o fim do período",
+            "ainda permanece no local", 
+            "continua no ponto de interesse",
+            "período pesquisado finalizado",
+            "veículo permaneceu no poi"
+        ]
+        
+        def veiculo_ainda_esta_no_poi(observacao: str) -> bool:
+            """Verifica se veículo ainda está no POI baseado na observação."""
+            if pd.isna(observacao):
+                return False
+                
+            obs_lower = str(observacao).lower().strip()
+            
+            for padrao in PADROES_AINDA_NO_POI:
+                if padrao in obs_lower:
+                    return True
+                    
+            return False
+        
+        # Cria eventos de entrada (sempre válidos)
+        entradas = df_poi[['Veículo', 'Data Entrada', 'Observações']].copy()
         entradas['Evento'] = 'entrada'
         entradas.rename(columns={'Data Entrada': 'Data Evento'}, inplace=True)
         
-        saidas = df_poi[['Veículo', 'Data Saída']].copy()
-        saidas['Evento'] = 'saida'
-        saidas.rename(columns={'Data Saída': 'Data Evento'}, inplace=True)
+        # Cria eventos de saída (FILTRADOS para excluir falsas saídas)
+        saidas_validas = []
+        saidas_ignoradas = 0
         
-        eventos = pd.concat([entradas, saidas], ignore_index=True)
+        for _, registro in df_poi.iterrows():
+            if veiculo_ainda_esta_no_poi(registro.get("Observações", "")):
+                # IGNORA esta saída - veículo ainda está no POI
+                saidas_ignoradas += 1
+                print(f"⚠️ {registro['Veículo']} em {poi}: Saída ignorada (ainda no POI)")
+            else:
+                # Saída válida - registra normalmente
+                saidas_validas.append({
+                    'Veículo': registro['Veículo'],
+                    'Data Evento': registro['Data Saída'],
+                    'Evento': 'saida',
+                    'Observações': registro.get('Observações', '')
+                })
+        
+        # Converte saídas para DataFrame
+        if saidas_validas:
+            saidas = pd.DataFrame(saidas_validas)
+        else:
+            saidas = pd.DataFrame(columns=['Veículo', 'Data Evento', 'Evento', 'Observações'])
+        
+        # Log de estatísticas
+        total_registros = len(df_poi)
+        entradas_count = len(entradas)
+        saidas_count = len(saidas)
+        
+        print(f"📊 {poi}: {total_registros} registros → {entradas_count} entradas, {saidas_count} saídas válidas")
+        if saidas_ignoradas > 0:
+            print(f"   ⚠️ {saidas_ignoradas} saídas ignoradas (veículos ainda no POI)")
+        
+        # Combina eventos e ordena cronologicamente
+        eventos = pd.concat([entradas[['Veículo', 'Data Evento', 'Evento']], 
+                            saidas[['Veículo', 'Data Evento', 'Evento']]], 
+                        ignore_index=True)
         eventos.dropna(subset=['Data Evento'], inplace=True)
         eventos.sort_values(by='Data Evento', inplace=True)
         
@@ -239,10 +295,11 @@ class AnalyticsProcessor:
         eventos['Veículos no POI'] = veiculos_no_poi_evento
         eventos['POI'] = poi
         
-        # Gera resumo por hora
+        # Se não há eventos, retorna DataFrames vazios
         if eventos.empty:
             return eventos, pd.DataFrame()
         
+        # Gera resumo por hora
         start_time = eventos['Data Evento'].min().floor('h')
         end_time = eventos['Data Evento'].max().ceil('h')
         timeline = pd.date_range(start=start_time, end=end_time, freq='h')
@@ -286,6 +343,12 @@ class AnalyticsProcessor:
             veiculos_fim_anterior = linha_atual
         
         df_contagem = pd.DataFrame(contagem)
+        
+        # Log final
+        if not df_contagem.empty:
+            ultimo_count = df_contagem.iloc[-1]['Veículos no final da hora']
+            print(f"✅ {poi}: {ultimo_count} veículos presentes no final do período")
+        
         return eventos, df_contagem
     
     def identificar_desvios_poi(self, poi: str, threshold: int) -> pd.DataFrame:

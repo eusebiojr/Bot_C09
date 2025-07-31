@@ -57,20 +57,9 @@ ENV PYTHONMALLOC=malloc
 # Expõe porta (Cloud Run exige)
 EXPOSE 8080
 
-# Health check simples
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8080/health', timeout=5)" || exit 1
+# Health check otimizado
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Comando padrão - cria servidor HTTP simples para Cloud Run
-CMD ["python", "-c", "import http.server; import socketserver; import threading; import main; \
-     def run_server(): \
-         PORT = 8080; \
-         Handler = http.server.SimpleHTTPRequestHandler; \
-         with socketserver.TCPServer(('', PORT), Handler) as httpd: \
-             httpd.serve_forever(); \
-     def run_main(): \
-         main.main(); \
-     if __name__ == '__main__': \
-         server_thread = threading.Thread(target=run_server, daemon=True); \
-         server_thread.start(); \
-         run_main();"]
+# CORRIGIDO: Executa app.py diretamente
+CMD ["python", "app.py"]

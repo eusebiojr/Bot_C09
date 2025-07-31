@@ -1,10 +1,11 @@
-# cloudbuild.yaml - Configuração CI/CD para Cloud Run (SIMPLIFICADO)
+# cloudbuild.yaml - CI/CD otimizado para Cloud Run (CORRIGIDO)
 steps:
   # Passo 1: Build da imagem Docker
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
       '-t', 'gcr.io/$PROJECT_ID/c09-bot:latest',
+      '--build-arg', 'BUILDKIT_INLINE_CACHE=1',
       '.'
     ]
 
@@ -12,7 +13,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/c09-bot:latest']
 
-  # Passo 3: Deploy no Cloud Run (serviço COMPLETO)
+  # Passo 3: Deploy no Cloud Run (serviço COMPLETO) - CORRIGIDO
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
       'run', 'deploy', 'c09-bot-completo',
@@ -20,17 +21,21 @@ steps:
       '--region', 'southamerica-east1',
       '--platform', 'managed',
       '--allow-unauthenticated',
-      '--memory', '2Gi',
-      '--cpu', '1',
-      '--timeout', '900s',  # 15 minutos
-      '--concurrency', '1',  # Uma execução por vez
-      '--max-instances', '1',  # Evita múltiplas instâncias simultâneas
-      '--set-env-vars', 'EXECUTION_MODE=COMPLETO',
+      '--memory', '4Gi',
+      '--cpu', '2',
+      '--timeout', '1800s',
+      '--concurrency', '1',
+      '--max-instances', '1',
+      '--min-instances', '0',
+      '--port', '8080',
+      '--cpu-boost',  # CORRIGIDO: era --startup-cpu-boost
+      '--execution-environment', 'gen2',
+      '--set-env-vars', 'EXECUTION_MODE=COMPLETO,PORT=8080,PYTHONUNBUFFERED=1',
       '--set-secrets', 'FROTA_USER=frota-user:latest,FROTA_PASSWORD=frota-password:latest,SP_USER=sp-user:latest,SP_PASSWORD=sp-password:latest',
       '--service-account', 'c09-bot@$PROJECT_ID.iam.gserviceaccount.com'
     ]
 
-  # Passo 4: Deploy no Cloud Run (serviço CANDLES)  
+  # Passo 4: Deploy no Cloud Run (serviço CANDLES) - CORRIGIDO
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
       'run', 'deploy', 'c09-bot-candles',
@@ -38,20 +43,36 @@ steps:
       '--region', 'southamerica-east1', 
       '--platform', 'managed',
       '--allow-unauthenticated',
-      '--memory', '1Gi',
+      '--memory', '2Gi',
       '--cpu', '1',
-      '--timeout', '300s',  # 5 minutos
+      '--timeout', '600s',
       '--concurrency', '1',
-      '--max-instances', '2',  # Permite 2 instâncias para candles
-      '--set-env-vars', 'EXECUTION_MODE=CANDLES',
+      '--max-instances', '2',
+      '--min-instances', '0',
+      '--port', '8080',
+      '--cpu-boost',  # CORRIGIDO: era --startup-cpu-boost
+      '--execution-environment', 'gen2',
+      '--set-env-vars', 'EXECUTION_MODE=CANDLES,PORT=8080,PYTHONUNBUFFERED=1',
       '--set-secrets', 'FROTA_USER=frota-user:latest,FROTA_PASSWORD=frota-password:latest,SP_USER=sp-user:latest,SP_PASSWORD=sp-password:latest',
       '--service-account', 'c09-bot@$PROJECT_ID.iam.gserviceaccount.com'
     ]
 
-# Configurações do build
-options:
-  machineType: 'E2_HIGHCPU_8'  # Máquina mais potente para build
-  logging: CLOUD_LOGGING_ONLY
+  # Passo 5: Verifica deploy (sem teste automático)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'run', 'services', 'list',
+      '--region', 'southamerica-east1',
+      '--filter', 'metadata.name:c09-bot',
+      '--format', 'table(metadata.name,status.url,status.conditions[0].type)'
+    ]
 
-# Timeout total do build
-timeout: '1200s'  # 20 minutos
+# Configurações do build otimizadas
+options:
+  machineType: 'E2_HIGHCPU_8'  # Máquina potente para build
+  substitution_option: 'ALLOW_LOOSE'
+  logging: CLOUD_LOGGING_ONLY
+  env:
+    - 'DOCKER_BUILDKIT=1'  # BuildKit para builds mais rápidos
+
+# Timeout total do build aumentado
+timeout: '1800s'  # 30 minutos
