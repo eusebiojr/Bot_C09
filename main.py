@@ -21,6 +21,10 @@ from core.scraper import criar_scraper
 from core.processor import criar_processor_rrp, criar_processor_tls
 from config.settings import carregar_config, validar_configuracao, ConstantesEspecificas
 
+if os.name == 'nt':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strrict')
 
 class C09Orchestrator:
     """
@@ -41,13 +45,13 @@ class C09Orchestrator:
         
         # Detecta modo de execução
         self.modo_execucao = self._detectar_modo_execucao()
-        print(f"🔧 Modo de execução: {self.modo_execucao}")
+        print(f" Modo de execução: {self.modo_execucao}")
         
         # Inicializa componentes baseado no modo
         if self.modo_execucao == "CANDLES":
             # Modo rápido - não precisa de scraper
             self.scraper = None
-            print("⚡ Modo CANDLES - Processamento rápido (4h de dados)")
+            print(" Modo CANDLES - Processamento rápido (4h de dados)")
         else:
             # Modo completo - inicializa scraper
             self.scraper = criar_scraper(
@@ -135,14 +139,14 @@ class C09Orchestrator:
         empresa_frotalog = unidade_config["empresa_frotalog"]
         
         try:
-            print(f"\n⚡ CANDLES {unidade} - Download e atualização de candles")
+            print(f"\n CANDLES {unidade} - Download e atualização de candles")
             
             # 1. Obtém período completo (01/mês - hoje)
             data_inicial, data_final = self._obter_periodo_execucao()
-            print(f"📅 Período: {data_inicial.date()} até {data_final.date()}")
+            print(f" Período: {data_inicial.date()} até {data_final.date()}")
             
             # 2. Download com período completo (igual ao modo COMPLETO)
-            print(f"📥 Baixando relatório C09...")
+            print(f" Baixando relatório C09...")
             caminho_relatorio = self.scraper.baixar_relatorio_c09(
                 empresa_frotalog=empresa_frotalog,
                 data_inicial=data_inicial,
@@ -150,12 +154,12 @@ class C09Orchestrator:
             )
             
             # 3. Processamento completo dos dados
-            print(f"⚙️ Processando dados...")
+            print(f" Processando dados...")
             processor = self._criar_processor_para_unidade(unidade)
             buffer_tratado = processor.processar_relatorio_c09(caminho_relatorio)
             
             # 4. Atualiza APENAS candles (sem alertas, sem métricas pesadas)
-            print(f"📊 Atualizando candles (sem alertas)...")
+            print(f" Atualizando candles (sem alertas)...")
             sucesso_candles = self._processar_candles_sem_alertas(
                 unidade=unidade,
                 buffer_tratado=buffer_tratado,
@@ -166,14 +170,14 @@ class C09Orchestrator:
             self._limpar_arquivo_temporario(caminho_relatorio)
             
             if sucesso_candles:
-                print(f"✅ CANDLES {unidade} - Atualizados com sucesso")
+                print(f" CANDLES {unidade} - Atualizados com sucesso")
                 return True
             else:
-                print(f"⚠️ CANDLES {unidade} - Falha na atualização")
+                print(f" CANDLES {unidade} - Falha na atualização")
                 return False
                 
         except Exception as e:
-            print(f"❌ ERRO CANDLES {unidade}: {e}")
+            print(f" ERRO CANDLES {unidade}: {e}")
             self._log_erro_detalhado(e, f"Modo CANDLES - Unidade {unidade}")
             return False
     
@@ -201,10 +205,10 @@ class C09Orchestrator:
             # Carrega dados do buffer
             df = processor_analytics.carregar_planilha_buffer(buffer_tratado)
             if df.empty:
-                print("⚠️ Dados vazios para candles")
+                print(" Dados vazios para candles")
                 return True  # Não é erro, apenas sem dados novos
             
-            print(f"📊 Processando candles com {len(df)} registros")
+            print(f" Processando candles com {len(df)} registros")
             
             # Define POIs para candles baseado na unidade
             if unidade == "RRP":
@@ -241,26 +245,26 @@ class C09Orchestrator:
                     if sucesso:
                         sucessos += 1
                         total_eventos += len(df_eventos)
-                        print(f"✅ {poi}: {len(df_eventos)} eventos atualizados")
+                        print(f" {poi}: {len(df_eventos)} eventos atualizados")
                     else:
-                        print(f"⚠️ {poi}: Falha na atualização SharePoint")
+                        print(f" {poi}: Falha na atualização SharePoint")
                 else:
-                    print(f"ℹ️ {poi}: Nenhum evento no período")
+                    print(f" {poi}: Nenhum evento no período")
                     sucessos += 1  # Sem dados é normal, não é erro
             
             # Log final
-            print(f"📊 RESUMO CANDLES: {sucessos}/{len(pois_candles)} POIs processados")
-            print(f"📈 Total de eventos processados: {total_eventos}")
+            print(f" RESUMO CANDLES: {sucessos}/{len(pois_candles)} POIs processados")
+            print(f" Total de eventos processados: {total_eventos}")
             
             # Considera sucesso se processou todos os POIs
             return sucessos == len(pois_candles)
             
         except ImportError as e:
-            print(f"❌ Erro de import no processamento candles: {e}")
+            print(f" Erro de import no processamento candles: {e}")
             return False
             
         except Exception as e:
-            print(f"❌ Erro no processamento candles: {e}")
+            print(f" Erro no processamento candles: {e}")
             return False
 
     def processar_unidade_modo_completo(self, unidade_config: dict) -> bool:
@@ -308,7 +312,7 @@ class C09Orchestrator:
             )
             
             if not sucesso_upload:
-                print(f"❌ Falha no upload para {unidade}")
+                print(f" Falha no upload para {unidade}")
                 return False
             
             # 5. Processamento de analytics completo (com alertas)
@@ -318,11 +322,11 @@ class C09Orchestrator:
             # 6. Limpeza
             self._limpar_arquivo_temporario(caminho_relatorio)
             
-            print(f"✅ Unidade {unidade} processada com sucesso!")
+            print(f" Unidade {unidade} processada com sucesso!")
             return True
             
         except Exception as e:
-            print(f"❌ ERRO ao processar unidade {unidade}: {e}")
+            print(f" ERRO ao processar unidade {unidade}: {e}")
             self._log_erro_detalhado(e, f"Modo COMPLETO - Unidade {unidade}")
             return False
     
@@ -350,11 +354,11 @@ class C09Orchestrator:
             return sucesso
             
         except ImportError as e:
-            print(f"❌ Erro de import no analytics: {e}")
+            print(f" Erro de import no analytics: {e}")
             return False
             
         except Exception as e:
-            print(f"❌ Erro no processamento tempo real {unidade}: {e}")
+            print(f" Erro no processamento tempo real {unidade}: {e}")
             return False
     
     def _upload_sharepoint(self, unidade_config: dict, data_referencia: datetime, 
@@ -415,8 +419,8 @@ class C09Orchestrator:
             return sucesso_tratado and sucesso_original
             
         except ImportError as e:
-            print(f"❌ Erro de import no upload SharePoint: {e}")
-            print("🔧 Verifique se todos os módulos estão criados")
+            print(f" Erro de import no upload SharePoint: {e}")
+            print(" Verifique se todos os módulos estão criados")
             return False
             
         except Exception as e:
@@ -448,14 +452,14 @@ class C09Orchestrator:
             )
             
             if not sucesso:
-                print(f"⚠️ Analytics {unidade} processado com falhas")
+                print(f" Analytics {unidade} processado com falhas")
             
         except ImportError as e:
-            print(f"❌ Erro de import no analytics: {e}")
-            print("🔧 Verifique se todos os módulos estão criados")
+            print(f" Erro de import no analytics: {e}")
+            print(" Verifique se todos os módulos estão criados")
             
         except Exception as e:
-            print(f"❌ Erro no processamento de analytics {unidade}: {e}")
+            print(f" Erro no processamento de analytics {unidade}: {e}")
             # Não falha o processo principal se houver erro aqui
     
     def _limpar_arquivo_temporario(self, caminho_arquivo: str):
@@ -514,10 +518,10 @@ class C09Orchestrator:
                 if sucesso:
                     return True
                 else:
-                    print(f"⚠️ Tentativa {tentativa}/{max_tentativas} falhou")
+                    print(f" Tentativa {tentativa}/{max_tentativas} falhou")
                     
             except Exception as e:
-                print(f"❌ Tentativa {tentativa}/{max_tentativas} - Erro: {e}")
+                print(f" Tentativa {tentativa}/{max_tentativas} - Erro: {e}")
                 self._log_erro_detalhado(e, f"Tentativa {tentativa}")
                 
                 if tentativa == max_tentativas:
@@ -540,7 +544,7 @@ class C09Orchestrator:
         """
         unidades_ativas = [u for u in self.config["unidades"] if u.get("ativo", True)]
         
-        print(f"🔄 MODO CANDLES - Atualizando {len(unidades_ativas)} unidades...")
+        print(f" MODO CANDLES - Atualizando {len(unidades_ativas)} unidades...")
         
         sucessos = 0
         falhas = 0
@@ -554,7 +558,7 @@ class C09Orchestrator:
                 falhas += 1
         
         # Relatório resumido
-        print(f"\n📊 CANDLES CONCLUÍDO: {sucessos}✅ {falhas}❌")
+        print(f"\n CANDLES CONCLUÍDO: {sucessos}✅ {falhas}❌")
         return falhas == 0
     
     def executar_ciclo_completo(self) -> bool:
@@ -573,17 +577,17 @@ class C09Orchestrator:
         
         for unidade_config in unidades_ativas:
             unidade = unidade_config["unidade"]
-            print(f"\n🔄 AGUARDANDO PROCESSAMENTO DE {unidade}...")
-            print(f"⏳ Outras unidades aguardarão {unidade} terminar completamente")
+            print(f"\n AGUARDANDO PROCESSAMENTO DE {unidade}...")
+            print(f" Outras unidades aguardarão {unidade} terminar completamente")
             
             sucesso = self.processar_unidade_modo_completo(unidade_config)
             
             if sucesso:
                 sucessos += 1
-                print(f"✅ {unidade} CONCLUÍDA - Próxima unidade pode iniciar")
+                print(f" {unidade} CONCLUÍDA - Próxima unidade pode iniciar")
             else:
                 falhas += 1
-                print(f"❌ {unidade} FALHADA - Continuando para próxima unidade")
+                print(f" {unidade} FALHADA - Continuando para próxima unidade")
             
             # Pausa entre unidades para garantir limpeza
             import time
@@ -593,12 +597,12 @@ class C09Orchestrator:
         print(f"\n{'='*60}")
         print(f"RELATÓRIO FINAL")
         print(f"{'='*60}")
-        print(f"✅ Sucessos: {sucessos}")
-        print(f"❌ Falhas: {falhas}")
-        print(f"📊 Total: {len(unidades_ativas)}")
+        print(f" Sucessos: {sucessos}")
+        print(f" Falhas: {falhas}")
+        print(f" Total: {len(unidades_ativas)}")
         
         if falhas > 0:
-            print(f"\n⚠️ ATENÇÃO: {falhas} unidade(s) falharam!")
+            print(f"\n ATENÇÃO: {falhas} unidade(s) falharam!")
             self._notificar_falhas(falhas)
         
         return falhas == 0
@@ -620,9 +624,9 @@ class C09Orchestrator:
                 timestamp=datetime.now()
             )
         except ImportError:
-            print(f"⚠️ Sistema de e-mail não implementado ainda")
+            print(f" Sistema de e-mail não implementado ainda")
         except Exception as e:
-            print(f"⚠️ Falha ao enviar e-mail: {e}")
+            print(f" Falha ao enviar e-mail: {e}")
     
     def _notificar_falha_critica(self, erro: Exception, tentativas: int):
         """
@@ -643,9 +647,9 @@ class C09Orchestrator:
                 timestamp=datetime.now()
             )
         except ImportError:
-            print(f"⚠️ Sistema de e-mail não implementado ainda")
+            print(f" Sistema de e-mail não implementado ainda")
         except Exception as e:
-            print(f"⚠️ Falha ao enviar e-mail crítico: {e}")
+            print(f" Falha ao enviar e-mail crítico: {e}")
 
 
 def main():
@@ -693,10 +697,10 @@ def main():
                 sucesso = orchestrator.executar_com_retry(max_tentativas=10)
                 
                 if sucesso:
-                    print(f"\n🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - {datetime.now():%H:%M:%S}")
+                    print(f"\n EXECUÇÃO CONCLUÍDA COM SUCESSO - {datetime.now():%H:%M:%S}")
                     sys.exit(0)
                 else:
-                    print(f"\n💥 EXECUÇÃO FINALIZADA COM FALHAS - {datetime.now():%H:%M:%S}")
+                    print(f"\n EXECUÇÃO FINALIZADA COM FALHAS - {datetime.now():%H:%M:%S}")
                     sys.exit(1)
                     
             finally:
@@ -705,12 +709,12 @@ def main():
                 sys.stderr = original_stderr
                 
     except Exception as e:
-        print(f"\n💥 ERRO CRÍTICO: {e}")
+        print(f"\n ERRO CRÍTICO: {e}")
         traceback.print_exc()
         
         # Escreve erro no log também
         with open(log_file, "a", encoding="utf-8") as f:
-            f.write(f"\n💥 ERRO CRÍTICO: {e}\n")
+            f.write(f"\n ERRO CRÍTICO: {e}\n")
             traceback.print_exc(file=f)
         
         sys.exit(1)
