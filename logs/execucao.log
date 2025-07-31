@@ -2559,3 +2559,19 @@ Processando candles: Oficina Central JSL
 ✅ Candles carregado: 40649 registros
 ✅ Resumo por Hora carregado: 5628 registros
 ✅ Reports carregado: 1 registros
+✅ Reports salvo no SharePoint: base_dados_reports.xlsx
+🚨 Processando sistema de alertas por GRUPO...
+❌ Erro no sistema de alertas: 'AnalyticsProcessor' object has no attribute '_obter_grupos_alertas'
+✅ Analytics TLS processado com sucesso
+Arquivo temporário removido: report.xlsx
+✅ Unidade TLS processada com sucesso!
+✅ TLS CONCLUÍDA - Próxima unidade pode iniciar
+
+============================================================
+RELATÓRIO FINAL
+============================================================
+✅ Sucessos: 2
+❌ Falhas: 0
+📊 Total: 2
+
+🎉 EXECUÇÃO CONCLUÍDA COM SUCESSO - 18:07:26
