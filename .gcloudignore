@@ -1,0 +1,7 @@
+# .gcloudignore
+.env
+logs/
+legacy/
+__pycache__/
+*.pyc
+.git/

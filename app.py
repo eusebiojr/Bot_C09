@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 # Configurações Cloud Run
 PORT = int(os.environ.get('PORT', 8080))
-K_SERVICE = os.environ.get('K_SERVICE')  # Detecta se está no Cloud Run
+K_SERVICE = os.environ.get('K_SERVICE')  # Detecta automaticamente se está no Cloud Run
 
 
 @app.route('/')
@@ -52,12 +52,17 @@ def trigger_processing():
     logger.info(f"🚀 Iniciando processamento C09 - {start_time}")
     
     try:
-        # Executa main.py como subprocess
+        # Executa main.py como subprocess COM TIMEOUT E ENCODING
+        logger.info("📋 Iniciando subprocess main.py...")
+        
         result = subprocess.run(
             ['python', 'main.py'],
             capture_output=True,
             text=True,
-            timeout=900  # 15 minutos timeout
+            encoding='utf-8',  # FORÇA UTF-8
+            errors='replace',  # SUBSTITUI caracteres problemáticos
+            timeout=600,  # 10 minutos timeout
+            cwd=os.getcwd()
         )
         
         end_time = datetime.now()
@@ -75,17 +80,32 @@ def trigger_processing():
         if result.returncode == 0:
             logger.info(f"✅ Processamento concluído com sucesso - {duration:.1f}s")
             response_data["message"] = "Processamento concluído com sucesso"
-            response_data["stdout"] = result.stdout[-1000:]  # Últimas 1000 chars
+            
+            # CORREÇÃO: Verificar se stdout existe antes de acessar
+            if result.stdout:
+                response_data["stdout"] = result.stdout[-1000:]  # Últimas 1000 chars
+            else:
+                response_data["stdout"] = "Nenhuma saída capturada"
+                
             return jsonify(response_data), 200
             
         else:
             logger.error(f"❌ Processamento falhou - código {result.returncode}")
-            logger.error(f"📄 STDERR: {result.stderr}")
-            logger.error(f"📄 STDOUT: {result.stdout}")
+            
+            # CORREÇÃO: Verificar se stderr/stdout existem
+            if result.stderr:
+                logger.error(f"📄 STDERR: {result.stderr}")
+                response_data["stderr"] = result.stderr[-2000:]
+            else:
+                response_data["stderr"] = "Nenhum erro capturado"
+                
+            if result.stdout:
+                logger.error(f"📄 STDOUT: {result.stdout}")
+                response_data["stdout"] = result.stdout[-1000:]
+            else:
+                response_data["stdout"] = "Nenhuma saída capturada"
             
             response_data["message"] = "Processamento falhou"
-            response_data["stderr"] = result.stderr[-2000:]  # Últimas 2000 chars
-            response_data["stdout"] = result.stdout[-1000:]
             
             # Enviar alerta por e-mail (se configurado)
             try:
@@ -107,11 +127,18 @@ def trigger_processing():
             return jsonify(response_data), 500
             
     except subprocess.TimeoutExpired:
-        logger.error("⏰ Timeout: Processamento excedeu 15 minutos")
+        logger.error("⏰ TIMEOUT: main.py travou por mais de 10 minutos")
+        logger.error("🔍 Possíveis causas: ChromeDriver travado, download infinito, input aguardando")
+        
         return jsonify({
             "error": "timeout",
-            "message": "Processamento excedeu tempo limite de 15 minutos",
-            "duration_seconds": 900
+            "message": "main.py travou - processo interrompido após 10 minutos",
+            "duration_seconds": 600,
+            "troubleshooting": [
+                "Verificar se ChromeDriver está funcionando",
+                "Testar main.py diretamente: python main.py",
+                "Verificar se há prompts aguardando input"
+            ]
         }), 408
         
     except Exception as e:

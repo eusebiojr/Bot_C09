@@ -2,10 +2,12 @@
 """
 Módulo de processamento de dados C09.
 Substitui as funções tratar_planilha_c09() duplicadas em RRP/TLS.
+VERSÃO CORRIGIDA: Com validações robustas para Cloud Run.
 """
 
 import pandas as pd
 import unicodedata
+import os
 from datetime import datetime
 from io import BytesIO
 from openpyxl import load_workbook
@@ -76,28 +78,33 @@ class C09DataProcessor:
     def _agrupar_registros_consecutivos(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Agrupa registros consecutivos do mesmo veículo no mesmo POI.
-        Mantém primeira entrada e última saída.
+        
+        Args:
+            df: DataFrame com dados filtrados
+            
+        Returns:
+            DataFrame agrupado
         """
+        # Aplica a classificação de grupo
+        df["Grupo"] = df["Ponto de Interesse"].apply(self._classificar_grupo)
+
+        # Agrupa entradas consecutivas por Veículo e Ponto de Interesse
         agrupados = []
         df_reset = df.reset_index(drop=True)
         idx = 0
-        
         while idx < len(df_reset):
             atual = df_reset.iloc[idx]
-            veic = atual["Veículo"]
+            veic  = atual["Veículo"]
             ponto = atual["Ponto de Interesse"]
             grupo = atual["Grupo"]
             entrada = atual["Data Entrada"]
-            saida = atual["Data Saída"]
-            
-            # Busca registros consecutivos do mesmo veículo/POI
+            saida   = atual["Data Saída"]
+
             j = idx + 1
-            while (j < len(df_reset) and 
-                   df_reset.iloc[j]["Veículo"] == veic and 
-                   df_reset.iloc[j]["Ponto de Interesse"] == ponto):
-                saida = df_reset.iloc[j]["Data Saída"]  # Última saída
+            while j < len(df_reset) and df_reset.iloc[j]["Veículo"] == veic and df_reset.iloc[j]["Ponto de Interesse"] == ponto:
+                saida = df_reset.iloc[j]["Data Saída"]
                 j += 1
-            
+
             agrupados.append({
                 "Veículo": veic,
                 "Ponto de Interesse": ponto,
@@ -106,55 +113,46 @@ class C09DataProcessor:
                 "Grupo": grupo,
                 "Observações": atual.get("Observações", "")
             })
-            
             idx = j
-        
-        return pd.DataFrame(agrupados)
-    
-    def _calcular_trajetos_e_slas(self, df_ag: pd.DataFrame) -> pd.DataFrame:
-        """
-        Calcula trajetos entre POIs e identifica violações de SLA.
-        """
-        # Inicializa colunas
-        df_ag["Trajeto Carregado"] = pd.NA
-        df_ag["Trajeto Vazio"] = pd.NA
+
+        df_ag = pd.DataFrame(agrupados)
+
+        # Calcula o tempo de permanência
+        df_ag["Tempo (h)"] = (df_ag["Data Saída"] - df_ag["Data Entrada"]).dt.total_seconds() / 3600
+        df_ag["Tempo (h)"] = df_ag["Tempo (h)"].round(5)
+
+        # Adiciona colunas necessárias
+        df_ag["Trajeto Carregado"] = 0.0
+        df_ag["Trajeto Vazio"] = 0.0
         df_ag["Observação"] = ""
+
+        return df_ag
+    
+    def _calcular_trajetos(self, df_ag: pd.DataFrame) -> pd.DataFrame:
+        """Calcula trajetos carregados e vazios."""
+        def soma_justificativas(df_temp, i_inicio, i_fim):
+            """Soma horas de manutenção e parada operacional entre dois índices."""
+            horas_manutencao = 0.0
+            horas_operacional = 0.0
+            
+            for k in range(i_inicio + 1, i_fim):
+                registro = df_temp.iloc[k]
+                if registro["Grupo"] == "Manutenção":
+                    horas_manutencao += registro["Tempo (h)"]
+                elif registro["Grupo"] == "Parada Operacional":
+                    horas_operacional += registro["Tempo (h)"]
+            
+            return horas_manutencao, horas_operacional
         
-        # Calcula tempo de permanência
-        df_ag["Tempo Permanencia"] = (
-            (df_ag["Data Saída"] - df_ag["Data Entrada"]).dt.total_seconds() / 3600
-        )
-        
-        def soma_justificativas(df_int: pd.DataFrame, inicio: int, fim: int) -> Tuple[float, float]:
-            """Soma horas de Manutenção e Parada Operacional entre POIs."""
-            sub = df_int.iloc[inicio + 1 : fim]
-            horas_mant = sub[sub["Grupo"] == "Manutenção"]["Tempo Permanencia"].sum()
-            horas_oper = sub[sub["Grupo"] == "Parada Operacional"]["Tempo Permanencia"].sum()
-            return horas_mant, horas_oper
-        
-        # Loop principal para análise de SLAs e trajetos
+        # Processa cada linha para calcular trajetos
         for i in range(len(df_ag)):
             atual = df_ag.iloc[i]
             veic = atual["Veículo"]
             grupo = atual["Grupo"]
-            tempo_permanencia = atual["Tempo Permanencia"]
             saida_atual = atual["Data Saída"]
             
-            # Verifica SLA de permanência
-            if grupo in ["Carregamento", "Fabrica"] and "carga" in self.slas:
-                if tempo_permanencia > self.slas["carga"]:
-                    df_ag.at[i, "Observação"] += (
-                        f"Carga estourou SLA ({tempo_permanencia:.2f}h > {self.slas['carga']:.2f}h). "
-                    )
-            elif grupo in ["Descarregamento", "Terminal"] and "descarga" in self.slas:
-                if tempo_permanencia > self.slas["descarga"]:
-                    df_ag.at[i, "Observação"] += (
-                        f"Descarga estourou SLA ({tempo_permanencia:.2f}h > {self.slas['descarga']:.2f}h). "
-                    )
-            
-            # Calcula trajetos
             if grupo in ["Carregamento", "Fabrica"]:
-                # Trajeto Carregado: desta saída até próxima entrada de Descarregamento
+                # Trajeto Carregado: desta saída até próxima entrada de Descarregamento/Terminal
                 for j in range(i + 1, len(df_ag)):
                     prox = df_ag.iloc[j]
                     if prox["Veículo"] != veic:
@@ -271,6 +269,7 @@ class C09DataProcessor:
     def processar_relatorio_c09(self, caminho_arquivo_origem: str) -> BytesIO:
         """
         Processa relatório C09 completo.
+        VERSÃO CORRIGIDA: Com validações robustas.
         
         Args:
             caminho_arquivo_origem: Caminho do arquivo Excel baixado
@@ -284,9 +283,29 @@ class C09DataProcessor:
         try:
             print(f"=== Iniciando processamento: {caminho_arquivo_origem} ===")
             
+            # ===== VALIDAÇÕES CRÍTICAS (ADICIONADAS) =====
+            if not caminho_arquivo_origem:
+                print("❌ ERRO: Caminho do arquivo é None ou vazio")
+                raise ValueError("Caminho do arquivo é None ou vazio")
+            
+            if not os.path.exists(caminho_arquivo_origem):
+                print(f"❌ ERRO: Arquivo não encontrado: {caminho_arquivo_origem}")
+                raise FileNotFoundError(f"Arquivo não encontrado: {caminho_arquivo_origem}")
+            
+            tamanho_arquivo = os.path.getsize(caminho_arquivo_origem)
+            if tamanho_arquivo == 0:
+                print(f"❌ ERRO: Arquivo vazio: {caminho_arquivo_origem}")
+                raise ValueError(f"Arquivo vazio: {caminho_arquivo_origem}")
+            
+            print(f"✅ Validação OK: {caminho_arquivo_origem} ({tamanho_arquivo} bytes)")
+            # ===== FIM DAS VALIDAÇÕES =====
+            
             # 1. Carrega dados
             df = pd.read_excel(caminho_arquivo_origem)
             print(f"Dados carregados: {len(df)} registros")
+            
+            if df.empty:
+                raise ValueError("Arquivo Excel está vazio ou sem dados válidos")
             
             # 2. Padroniza POIs
             df["Ponto de Interesse"] = df["Ponto de Interesse"].astype(str).apply(self._padronizar_texto)
@@ -302,56 +321,51 @@ class C09DataProcessor:
             df_filtrado = df_filtrado.sort_values(by=["Veículo", "Data Entrada"])
             df_filtrado = df_filtrado[["Veículo", "Ponto de Interesse", "Data Entrada", "Data Saída", "Observações"]]
             
-            # 5. Converte datas
-            df_filtrado["Data Entrada"] = pd.to_datetime(df_filtrado["Data Entrada"], dayfirst=True, errors="coerce")
-            df_filtrado["Data Saída"] = pd.to_datetime(df_filtrado["Data Saída"], dayfirst=True, errors="coerce")
-            
-            # 6. Classifica grupos
-            df_filtrado["Grupo"] = df_filtrado["Ponto de Interesse"].apply(self._classificar_grupo)
-            
-            # 7. Agrupa registros consecutivos
+            # 5. Agrupa registros consecutivos
             df_agrupado = self._agrupar_registros_consecutivos(df_filtrado)
             print(f"Após agrupamento: {len(df_agrupado)} registros")
             
-            # 8. Calcula trajetos e SLAs
-            df_processado = self._calcular_trajetos_e_slas(df_agrupado)
+            # 6. Calcula trajetos e SLAs
+            df_com_trajetos = self._calcular_trajetos(df_agrupado)
             
-            # 9. Formatação final
-            df_final = self._formatar_dados_finais(df_processado)
+            # 7. Formatação final
+            df_final = self._formatar_dados_finais(df_com_trajetos)
             
-            # 10. Gera Excel formatado
-            excel_resultado = self._criar_excel_formatado(df_final)
+            # 8. Cria Excel formatado
+            buffer_resultado = self._criar_excel_formatado(df_final)
             
             print(f"=== Processamento concluído: {len(df_final)} registros finais ===")
-            return excel_resultado
+            return buffer_resultado
             
         except Exception as e:
-            print(f"ERRO no processamento: {e}")
+            print(f"❌ ERRO no processamento: {e}")
+            print(f"   - Arquivo: {caminho_arquivo_origem}")
+            print(f"   - Tipo do erro: {type(e).__name__}")
             raise
 
 
 class ConfiguradorSLAs:
-    """Classe auxiliar para ajustar SLAs por unidade."""
+    """Classe para configurar SLAs específicos por unidade."""
     
     @staticmethod
     def aplicar_slas_rrp(config_pois: List[Dict]) -> List[Dict]:
-        """Aplica SLAs específicos da unidade RRP."""
+        """Aplica SLAs específicos do RRP."""
         slas_rrp = {
-            "trajeto_carregado": 6.3667,  # 6:22h
-            "trajeto_vazio": 6.0833,      # 6:05h
+            "trajeto_carregado": 6.3667,     # 6:22h
+            "trajeto_vazio": 6.0833,         # 6:05h
         }
         
         for poi in config_pois:
             if poi["grupo"] == "Carregamento" and poi["ponto_interesse"] == "Carregamento RRp":
                 poi["sla_horas"] = 1.0
-            elif poi["grupo"] == "Descarregamento" and "Descarga" in poi["ponto_interesse"]:
+            elif poi["grupo"] == "Descarregamento" and poi["ponto_interesse"] == "Descarga Inocencia":
                 poi["sla_horas"] = 1.1833  # 1:11h
         
         return config_pois
     
     @staticmethod
     def aplicar_slas_tls(config_pois: List[Dict]) -> List[Dict]:
-        """Aplica SLAs específicos da unidade TLS."""
+        """Aplica SLAs específicos do TLS."""
         slas_tls = {
             "trajeto_carregado": 3.5,     # 3:30h
             "trajeto_vazio": 2.9733,      # 2:58:24h
